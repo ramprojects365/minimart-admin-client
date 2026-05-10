@@ -182,33 +182,4 @@ export class AdminLoginService {
     );
     this.adminUser.next(adminUser);
   }
-  bypassLoginAs(
-    userType: "sadmin" | "nadmin" | "manager" | "padmin",
-    email: string = "mock@local",
-    displayName?: string,
-  ) {
-    const name =
-      displayName !== undefined && displayName !== null
-        ? displayName
-        : userType === "nadmin"
-          ? "Prasanthi"
-          : userType === "padmin"
-            ? "John"
-            : "Ram";
-    const payload = {
-      admin_id: 0,
-      display_name: name,
-      user_type: userType,
-      email,
-    };
-    const expirationDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    const user = new AdminUser(
-      payload,
-      "mock-token",
-      "mock-refresh",
-      expirationDate,
-    );
-    this.adminUser.next(user);
-    localStorage.setItem(this.globals.strUserData, JSON.stringify(user));
-  }
 }

@@ -50,11 +50,6 @@ export class NadminUsersComponent implements OnInit {
       { label: 'Active', value: 'active' },
       { label: 'Inactive', value: 'inactive' },
     ];
-    this.userShops = this.getMockShops();
-    this.userShop = this.userShops[0]?.value;
-    this.userBranches = this.getMockBranches(this.userShop);
-    this.userBranch = this.userBranches[0]?.value;
-    this.adminUsers = this.getMockUsers();
     this.getShops();
   }
   logout() {
@@ -75,18 +70,18 @@ export class NadminUsersComponent implements OnInit {
             const shopIds = remoteShops.map(item => item.shop_id.toString());
             this.loadAdminUsers(shopIds.join(','));
           } else {
-            this.userShops = this.getMockShops();
-            this.userShop = this.userShops[0]?.value;
-            this.userBranches = this.getMockBranches(this.userShop);
-            this.userBranch = this.userBranches[0]?.value;
+            this.userShops = [];
+            this.userShop = null;
+            this.userBranches = [];
+            this.userBranch = null;
             this.loadAdminUsers('');
           }
         },
         () => {
-          this.userShops = this.getMockShops();
-          this.userShop = this.userShops[0]?.value;
-          this.userBranches = this.getMockBranches(this.userShop);
-          this.userBranch = this.userBranches[0]?.value;
+          this.userShops = [];
+          this.userShop = null;
+          this.userBranches = [];
+          this.userBranch = null;
           this.loadAdminUsers('');
         },
       );
@@ -102,13 +97,13 @@ export class NadminUsersComponent implements OnInit {
               return { label: item.branch_name, value: item.branch_id };
             });
           } else {
-            this.userBranches = this.getMockBranches(shopId);
+            this.userBranches = [];
           }
           this.userBranch = this.userBranches[0]?.value;
           // console.log(this.userBranch);
         },
         () => {
-          this.userBranches = this.getMockBranches(shopId);
+          this.userBranches = [];
           this.userBranch = this.userBranches[0]?.value;
         },
       );
@@ -120,85 +115,12 @@ export class NadminUsersComponent implements OnInit {
         admUsers => {
           //console.log(admUsers.payload.users);
           const users = admUsers?.payload?.users;
-          if (Array.isArray(users) && users.length > 0) {
-            this.adminUsers = users;
-          } else if (!Array.isArray(this.adminUsers) || this.adminUsers.length === 0) {
-            this.adminUsers = this.getMockUsers();
-          }
+          this.adminUsers = Array.isArray(users) ? users : [];
         },
         () => {
-          if (!Array.isArray(this.adminUsers) || this.adminUsers.length === 0) {
-            this.adminUsers = this.getMockUsers();
-          }
+          this.adminUsers = [];
         },
       );
-  }
-
-  private getMockUsers() {
-    return [
-      {
-        admin_id: 901,
-        display_name: 'Branch Manager 1',
-        email: 'manager1@example.com',
-        user_type: 'manager',
-        branch_name: 'Brickfields',
-        status: 'active',
-      },
-      {
-        admin_id: 902,
-        display_name: 'Branch Manager 2',
-        email: 'manager2@example.com',
-        user_type: 'manager',
-        branch_name: 'Brickfields',
-        status: 'inactive',
-      },
-      {
-        admin_id: 903,
-        display_name: 'Branch Manager 3',
-        email: 'manager3@example.com',
-        user_type: 'manager',
-        branch_name: 'KL Downtown',
-        status: 'active',
-      },
-      {
-        admin_id: 904,
-        display_name: 'Branch Manager 4',
-        email: 'manager4@example.com',
-        user_type: 'manager',
-        branch_name: 'PJ Section 14',
-        status: 'active',
-      },
-      {
-        admin_id: 905,
-        display_name: 'Branch Manager 5',
-        email: 'manager5@example.com',
-        user_type: 'manager',
-        branch_name: 'Shah Alam',
-        status: 'inactive',
-      },
-    ];
-  }
-
-  private getMockShops() {
-    return [
-      { label: 'Mini Mart', value: '1' },
-      { label: 'Fresh Basket', value: '2' },
-    ];
-  }
-
-  private getMockBranches(shopId: string) {
-    const map = {
-      '1': [
-        { label: 'Brickfields', value: '102' },
-        { label: 'KL Downtown', value: '101' },
-      ],
-      '2': [
-        { label: 'PJ Section 14', value: '201' },
-        { label: 'Shah Alam', value: '202' },
-      ],
-    };
-
-    return map[shopId] || [{ label: 'Default Branch', value: '0' }];
   }
 
   onRowEditInit(user) {
@@ -253,9 +175,6 @@ export class NadminUsersComponent implements OnInit {
     // this.selectedCatInAddProd = this.categories[0].category_id;
     this.userType = 'manager';
     this.userShop = this.userShop || this.userShops[0]?.value;
-    if (!this.userBranches || this.userBranches.length === 0) {
-      this.userBranches = this.getMockBranches(this.userShop);
-    }
     this.userBranch = this.userBranch || this.userBranches[0]?.value;
     this.displayUserAdder = true;
   }

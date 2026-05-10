@@ -44,26 +44,32 @@ export class AdminLoginComponent implements OnInit {
     }
     const value = form.value;
     const email = (value.email || "").toLowerCase().trim();
-    if (email === "sadmin@gmail.com") {
-      this.adminLoginService.bypassLoginAs("sadmin", email);
-      this.toastr.success("Login Success!", "You are now logged in!");
-      this.router.navigate(["/admin/sadmin"]);
-      return;
+    this.spinner.show();
+    this.adminLoginService.adminLogin(email, value.password).subscribe({
+      next: () => {
+        this.spinner.hide();
+        const adminUser = this.adminLoginService.adminUser.getValue();
+        this.toastr.success("Login Success!", "You are now logged in!");
+        this.router.navigate([this.getAdminHomeRoute(adminUser.userType)]);
+      },
+      error: (errorMessage) => {
+        this.spinner.hide();
+        this.toastr.error(errorMessage, "Login Failed");
+      },
+    });
+  }
+
+  private getAdminHomeRoute(userType: string): string {
+    switch (userType) {
+      case "nadmin":
+        return "/admin/nadmin";
+      case "manager":
+        return "/admin/manager";
+      case "padmin":
+        return "/admin/padmin";
+      case "sadmin":
+      default:
+        return "/admin/sadmin";
     }
-    if (email === "nadmin@gmail.com") {
-      this.adminLoginService.bypassLoginAs("nadmin", email);
-      this.toastr.success("Login Success!", "You are now logged in!");
-      this.router.navigate(["/admin/nadmin"]);
-      return;
-    }
-    if (email === "pdadmin@gmail.com" || email === "padmin@gmail.com") {
-      this.adminLoginService.bypassLoginAs("padmin", email);
-      this.toastr.success("Login Success!", "You are now logged in!");
-      this.router.navigate(["/admin/padmin"]);
-      return;
-    }
-    this.adminLoginService.bypassLoginAs("sadmin", email || "mock@local");
-    this.toastr.success("Login Success!", "You are now logged in!");
-    this.router.navigate(["/admin/sadmin"]);
   }
 }

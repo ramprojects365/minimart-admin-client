@@ -53,54 +53,8 @@ export class SadminUsersComponent implements OnInit {
       { label: 'Active', value: 'active' },
       { label: 'Inactive', value: 'inactive' },
     ];
-    this.adminUsers = this.getMockExistingUsers();
     this.loadAdminUsers();
     this.title.setTitle("Mini Mart - Brickfileds Grocery Store for home delivery");
-  }
-
-  private getMockExistingUsers() {
-    return [
-      {
-        admin_id: 201,
-        display_name: 'Super Admin',
-        branch_name: 'HQ',
-        user_type: 'sadmin',
-        email: 'super.admin@example.com',
-        status: 'active',
-      },
-      {
-        admin_id: 202,
-        display_name: 'Partner Admin',
-        branch_name: 'KL Downtown',
-        user_type: 'padmin',
-        email: 'partner.admin@example.com',
-        status: 'active',
-      },
-      {
-        admin_id: 203,
-        display_name: 'N Admin - Brickfields',
-        branch_name: 'Brickfields',
-        user_type: 'nadmin',
-        email: 'nadmin.brickfields@example.com',
-        status: 'active',
-      },
-      {
-        admin_id: 204,
-        display_name: 'N Admin - PJ',
-        branch_name: 'PJ Section 14',
-        user_type: 'nadmin',
-        email: 'nadmin.pj@example.com',
-        status: 'inactive',
-      },
-      {
-        admin_id: 205,
-        display_name: 'API User',
-        branch_name: 'System',
-        user_type: 'api',
-        email: 'api.user@example.com',
-        status: 'active',
-      },
-    ];
   }
 
   loadAdminUsers() {
@@ -128,14 +82,10 @@ export class SadminUsersComponent implements OnInit {
       .subscribe(
         admUsers => {
           const users = admUsers?.payload?.users;
-          if (Array.isArray(users) && users.length > 0) {
-            this.adminUsers = users;
-          }
+          this.adminUsers = Array.isArray(users) ? users : [];
         },
         () => {
-          if (!Array.isArray(this.adminUsers) || this.adminUsers.length === 0) {
-            this.adminUsers = this.getMockExistingUsers();
-          }
+          this.adminUsers = [];
         });
   }
 

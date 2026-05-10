@@ -42,113 +42,8 @@ export class SadminSalesComponent implements OnInit {
       { field: 'total', header: 'Total' },
       { field: 'status', header: 'Status' },
     ];
-    this.userShops = this.getMockShops();
-    this.userShop = this.userShops[0]?.value;
-    this.userBranches = this.getMockBranches(this.userShop);
-    this.userBranch = this.userBranches[0]?.value;
-    this.sales = this.getMockSales(this.userBranch).map(item => {
-      item.date = this.utilityService.getDateTimeFormatted(item.date);
-      return item;
-    });
     this.getShops();
     this.title.setTitle("Mini Mart: Grocery delivery from Lulu Hypermarket, Modern Stores, UM Stores | Download today");
-  }
-
-  private getMockShops() {
-    return [
-      { label: 'Mini Mart', value: '1' },
-      { label: 'Fresh Basket', value: '2' },
-      { label: 'Daily Needs', value: '3' },
-    ];
-  }
-
-  private getMockBranches(shopId: string) {
-    const map = {
-      '1': [
-        { label: 'KL Downtown', value: '101' },
-        { label: 'Brickfields', value: '102' },
-        { label: 'Cheras', value: '103' },
-      ],
-      '2': [
-        { label: 'PJ Section 14', value: '201' },
-        { label: 'Shah Alam', value: '202' },
-      ],
-      '3': [
-        { label: 'Ampang', value: '301' },
-        { label: 'Setapak', value: '302' },
-      ],
-    };
-
-    return map[shopId] || [];
-  }
-
-  private getMockSales(branchId: string) {
-    const now = Date.now();
-    const branchMeta = {
-      '101': { prefix: 'KL', baseId: 4100 },
-      '102': { prefix: 'BF', baseId: 4200 },
-      '103': { prefix: 'CH', baseId: 4300 },
-      '201': { prefix: 'PJ', baseId: 4400 },
-      '202': { prefix: 'SA', baseId: 4500 },
-      '301': { prefix: 'AM', baseId: 4600 },
-      '302': { prefix: 'ST', baseId: 4700 },
-    };
-
-    const meta = branchMeta[branchId] || { prefix: 'BR', baseId: 4000 };
-    const makeSaleIdString = (n: number) => `${meta.prefix}-${n}`;
-
-    return [
-      {
-        sales_id: meta.baseId + 1,
-        salesIdString: makeSaleIdString(meta.baseId + 1),
-        displayName: 'Aisha Rahman',
-        date: new Date(now - 2 * 60 * 60 * 1000).toISOString(),
-        discount: 0,
-        delivery_charge: 6,
-        total: 58.9,
-        status: 'Accepted',
-      },
-      {
-        sales_id: meta.baseId + 2,
-        salesIdString: makeSaleIdString(meta.baseId + 2),
-        displayName: 'Daniel Lee',
-        date: new Date(now - 5 * 60 * 60 * 1000).toISOString(),
-        discount: 2,
-        delivery_charge: 0,
-        total: 112.5,
-        status: 'Delivered',
-      },
-      {
-        sales_id: meta.baseId + 3,
-        salesIdString: makeSaleIdString(meta.baseId + 3),
-        displayName: 'Nur Izzah',
-        date: new Date(now - 9 * 60 * 60 * 1000).toISOString(),
-        discount: 0,
-        delivery_charge: 8,
-        total: 74.2,
-        status: 'Accepted',
-      },
-      {
-        sales_id: meta.baseId + 4,
-        salesIdString: makeSaleIdString(meta.baseId + 4),
-        displayName: 'Kumar Raj',
-        date: new Date(now - 28 * 60 * 60 * 1000).toISOString(),
-        discount: 5,
-        delivery_charge: 5,
-        total: 39.0,
-        status: 'Cancelled',
-      },
-      {
-        sales_id: meta.baseId + 5,
-        salesIdString: makeSaleIdString(meta.baseId + 5),
-        displayName: 'Siti Amina',
-        date: new Date(now - 52 * 60 * 60 * 1000).toISOString(),
-        discount: 0,
-        delivery_charge: 4,
-        total: 89.7,
-        status: 'Delivered',
-      },
-    ];
   }
 
   getShops() {
@@ -163,30 +58,22 @@ export class SadminSalesComponent implements OnInit {
             });
             this.userShop = this.userShops[0].value;
             this.getBranches(this.userShops[0].value);
-          } else if (!Array.isArray(this.userShops) || this.userShops.length === 0) {
-            this.userShops = this.getMockShops();
-            this.userShop = this.userShops[0]?.value;
-            this.userBranches = this.getMockBranches(this.userShop);
-            this.userBranch = this.userBranches[0]?.value;
-            this.sales = this.getMockSales(this.userBranch).map(item => {
-              item.date = this.utilityService.getDateTimeFormatted(item.date);
-              return item;
-            });
+          } else {
+            this.userShops = [];
+            this.userShop = null;
+            this.userBranches = [];
+            this.userBranch = null;
+            this.sales = [];
           }
           // const shopIds = shops.payload.shops.map(item => item.shop_id.toString());
           // this.loadAdminUsers(shopIds.join(','));
         },
         () => {
-          if (!Array.isArray(this.userShops) || this.userShops.length === 0) {
-            this.userShops = this.getMockShops();
-            this.userShop = this.userShops[0]?.value;
-            this.userBranches = this.getMockBranches(this.userShop);
-            this.userBranch = this.userBranches[0]?.value;
-            this.sales = this.getMockSales(this.userBranch).map(item => {
-              item.date = this.utilityService.getDateTimeFormatted(item.date);
-              return item;
-            });
-          }
+          this.userShops = [];
+          this.userShop = null;
+          this.userBranches = [];
+          this.userBranch = null;
+          this.sales = [];
         });
   }
 
@@ -200,24 +87,20 @@ export class SadminSalesComponent implements OnInit {
               return { label: item.branch_name, value: item.branch_id };
             });
           } else {
-            this.userBranches = this.getMockBranches(shopId);
+            this.userBranches = [];
           }
-          this.userBranch = this.userBranches[0] ? this.userBranches[0].value : '0';
-          this.sales = this.getMockSales(this.userBranch).map(item => {
-            item.date = this.utilityService.getDateTimeFormatted(item.date);
-            return item;
-          });
+          this.userBranch = this.userBranches[0] ? this.userBranches[0].value : null;
           // console.log(this.userBranch);
-          this.getAllSales(this.userBranch);
+          if (this.userBranch) {
+            this.getAllSales(this.userBranch);
+          } else {
+            this.sales = [];
+          }
         },
         () => {
-          this.userBranches = this.getMockBranches(shopId);
-          this.userBranch = this.userBranches[0] ? this.userBranches[0].value : '0';
-          this.sales = this.getMockSales(this.userBranch).map(item => {
-            item.date = this.utilityService.getDateTimeFormatted(item.date);
-            return item;
-          });
-          this.getAllSales(this.userBranch);
+          this.userBranches = [];
+          this.userBranch = null;
+          this.sales = [];
         },
       );
   }
@@ -232,21 +115,13 @@ export class SadminSalesComponent implements OnInit {
               item.date = this.utilityService.getDateTimeFormatted(item.date);
               return item;
             });
-          } else if (!Array.isArray(this.sales) || this.sales.length === 0) {
-            this.sales = this.getMockSales(branchId).map(item => {
-              item.date = this.utilityService.getDateTimeFormatted(item.date);
-              return item;
-            });
+          } else {
+            this.sales = [];
           }
           //console.log('sadmin sales'+ JSON.stringify(this.sales));
         },
         () => {
-          if (!Array.isArray(this.sales) || this.sales.length === 0) {
-            this.sales = this.getMockSales(branchId).map(item => {
-              item.date = this.utilityService.getDateTimeFormatted(item.date);
-              return item;
-            });
-          }
+          this.sales = [];
         },
       );
   }
@@ -254,10 +129,6 @@ export class SadminSalesComponent implements OnInit {
     this.getBranches(event.value);
   }
   changeBranch(event) {
-    this.sales = this.getMockSales(event.value).map(item => {
-      item.date = this.utilityService.getDateTimeFormatted(item.date);
-      return item;
-    });
     this.getAllSales(event.value);
   }
   // showDetails(sale) {
