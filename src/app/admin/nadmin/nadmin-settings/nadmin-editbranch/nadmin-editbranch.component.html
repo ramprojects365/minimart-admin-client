@@ -8,7 +8,7 @@
         <div class="ibox animated fadeInRight">
             <div class="ibox-title">
                 <button pButton type="button" icon="pi pi-arrow-left" style="margin-right: 1em;"
-                    (click)="router.navigate(['admin/nadmin/settings']);"></button>
+                    (click)="router.navigate(['/admin/nadmin/settings']);"></button>
                 <h5>Edit Branch</h5>
             </div>
             <div class="ibox-content">
@@ -29,7 +29,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label><b>Shop Category</b></label>
-                                                <p-dropdown [options]="shopCategories" selected
+                                                <p-dropdown [options]="shopCategoriesList" selected
                                                     [style]="{'width':'100%'}" name="shopCategory"
                                                     [(ngModel)]="shopCategory" required>
                                                 </p-dropdown>

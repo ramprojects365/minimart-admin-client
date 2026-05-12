@@ -122,7 +122,7 @@ export class NadminSettingsService {
         // tslint:disable-next-line: object-literal-shorthand - by Sunoj
         return this.http.patch<AdminSettingsResponse>('api/v2/admin/web/branches/status/' + branch_id,
             {
-                status: status
+                status: status ? 1 : 0
             });
     }
 

@@ -41,7 +41,13 @@ export class NadminSettingsComponent implements OnInit {
     this.adminLoginService.adminLogout();
   }
   getShops() {
-    const adminId = this.adminLoginService.adminUser.getValue().adminId;
+    const adminId = this.adminLoginService.adminUser.getValue()?.adminId;
+    if (!adminId) {
+      this.userShops = [];
+      this.userShop = null;
+      this.userBranches = [];
+      return;
+    }
     this.nadminSettingsService.getAllUsersShops(adminId)
       .subscribe(
         shops => {
@@ -67,13 +73,17 @@ export class NadminSettingsComponent implements OnInit {
   }
 
   getBranches(shopId) {
+    if (!shopId) {
+      this.userBranches = [];
+      return;
+    }
     this.nadminSettingsService.getAllUsersBranches(shopId)
       .subscribe(
         branches => {
           const remoteBranches = branches?.payload?.branches;
           if (Array.isArray(remoteBranches) && remoteBranches.length > 0) {
             this.userBranches = remoteBranches.map(item => {
-              return { label: item.branch_name, value: item.branch_id, image: item.image, active: item.active };
+              return { label: item.branch_name, value: item.branch_id, image: item.image, active: item.active === true || item.active === 1 };
             });
           } else {
             this.userBranches = [];
@@ -91,15 +101,16 @@ export class NadminSettingsComponent implements OnInit {
   }
 
   editShop(shop) {
-    this.router.navigate(['admin/nadmin/editshop', shop.value]);
+    this.router.navigate(['/admin/nadmin/editshop', shop.value]);
   }
 
   editBranch(branch) {
-    this.router.navigate(['admin/nadmin/editbranch', branch.value]);
+    this.router.navigate(['/admin/nadmin/editbranch', branch.value]);
   }
 
   changeStatus(event, branch_id) {
-    this.nadminSettingsService.updateBranchStatus(branch_id, event)
+    const status = event && event.checked !== undefined ? event.checked : event;
+    this.nadminSettingsService.updateBranchStatus(branch_id, status)
       .subscribe(
         branches => {
           this.toastr.success('Your edit has been saved!', 'Save Successful!');

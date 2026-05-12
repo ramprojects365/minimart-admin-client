@@ -49,7 +49,7 @@ export class NadminAddshopComponent implements OnInit {
         if (response.status === 201) {
           this.toastr.success('The new shop you have added has been saved.!', 'Shop Added!');
           form.reset();
-          this.router.navigate(['admin/nadmin/settings']);
+          this.router.navigate(['/admin/nadmin/settings']);
         } else {
           // console.log(response);
           this.toastr.error('The new shop you have added has not been saved!', 'Shop Not Added!');

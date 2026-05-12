@@ -23,6 +23,7 @@ export class NadminEditbranchComponent implements OnInit {
   private geoCoder;
 
   userShops = [];
+  shopCategoriesList = [];
   userShop: string;
   shopCategory: string;
   currencies = [];
@@ -83,11 +84,22 @@ export class NadminEditbranchComponent implements OnInit {
     }
   }
   getShops() {
-    const adminId = this.adminLoginService.adminUser.getValue().adminId;
+    const adminId = this.adminLoginService.adminUser.getValue()?.adminId;
+    if (!adminId) {
+      this.userShops = [];
+      this.userShop = null;
+      return;
+    }
     this.nadminSettingsService.getAllUsersShops(adminId)
       .subscribe(
         shops => {
-          this.userShops = shops.payload.shops.map(item => {
+          const remoteShops = shops?.payload?.shops;
+          if (!Array.isArray(remoteShops) || remoteShops.length === 0) {
+            this.userShops = [];
+            this.userShop = null;
+            return;
+          }
+          this.userShops = remoteShops.map(item => {
             return { label: item.shop_name, value: item.shop_id };
           });
           // this.userShop = this.userShops[0].value;
@@ -98,7 +110,13 @@ export class NadminEditbranchComponent implements OnInit {
     this.nadminSettingsService.getShopCategories()
     .subscribe(
       categories => {
-        this.shopCategories = categories.payload.categories.map(item => {
+        const remoteCategories = categories?.payload?.categories;
+        if (!Array.isArray(remoteCategories) || remoteCategories.length === 0) {
+          this.shopCategoriesList = [];
+          this.shopCategory = null;
+          return;
+        }
+        this.shopCategoriesList = remoteCategories.map(item => {
           return { label: item.category_name, value: item.category_id };
         });
         //this.shopCategory = this.shopCategories[0].value;
@@ -235,7 +253,7 @@ export class NadminEditbranchComponent implements OnInit {
           if (response.status === 201) {
             this.toastr.success('Your branch has been updated successfully!', 'Branch Updated!');
             this.uploadedImage = '';
-            this.router.navigate(['admin/nadmin/settings']);
+            this.router.navigate(['/admin/nadmin/settings']);
           } else if (response.status === 406) {
             this.toastr.warning('You have not changed anything!', 'Nothing to save!');
           } else {

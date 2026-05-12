@@ -27,7 +27,7 @@ export class NadminAddbranchComponent implements OnInit {
   // private theme: any;
 
   userShops = [];
-  //shopCategories = [];
+  shopCategoriesList = [];
   userShop: string;
   shopCategory: string;
   currencies = [];
@@ -95,14 +95,25 @@ export class NadminAddbranchComponent implements OnInit {
     console.log(event.value);
   }
   getShops() {
-    const adminId = this.adminLoginService.adminUser.getValue().adminId;
+    const adminId = this.adminLoginService.adminUser.getValue()?.adminId;
+    if (!adminId) {
+      this.userShops = [];
+      this.userShop = null;
+      return;
+    }
     this.nadminSettingsService.getAllUsersShops(adminId)
       .subscribe(
         shops => {
-          this.userShops = shops.payload.shops.map(item => {
+          const remoteShops = shops?.payload?.shops;
+          if (!Array.isArray(remoteShops) || remoteShops.length === 0) {
+            this.userShops = [];
+            this.userShop = null;
+            return;
+          }
+          this.userShops = remoteShops.map(item => {
             return { label: item.shop_name, value: item.shop_id };
           });
-          this.userShop = this.userShops[0].value;
+          this.userShop = this.userShops[0]?.value;
           // console.log(this.userShops);
         });
   }
@@ -110,10 +121,16 @@ export class NadminAddbranchComponent implements OnInit {
     this.nadminSettingsService.getShopCategories()
     .subscribe(
       categories => {
-        this.shopCategories = categories.payload.categories.map(item => {
+        const remoteCategories = categories?.payload?.categories;
+        if (!Array.isArray(remoteCategories) || remoteCategories.length === 0) {
+          this.shopCategoriesList = [];
+          this.shopCategory = null;
+          return;
+        }
+        this.shopCategoriesList = remoteCategories.map(item => {
           return { label: item.category_name, value: item.category_id };
         });
-        this.shopCategory = this.shopCategories[0].value;
+        this.shopCategory = this.shopCategoriesList[0]?.value;
         //console.log(JSON.stringify(categories.payload));
       });
   }
@@ -246,7 +263,7 @@ export class NadminAddbranchComponent implements OnInit {
           // console.log(response);
           if (response.status === 201) {
             this.toastr.success('Your branch has been added successfully!', 'Branch Added!');
-            this.router.navigate(['admin/nadmin/settings']);
+            this.router.navigate(['/admin/nadmin/settings']);
             this.uploadedImage = '';
             addFileUpload.clear();
             form.reset();           

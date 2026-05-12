@@ -26,7 +26,7 @@
         <div class="ibox animated fadeInRight">
             <div class="ibox-title">
                 <h5>Existing Shops</h5>
-                <button *ngIf="userShops?.length == 0" (click)="router.navigate(['admin/nadmin/addshop']);" style="margin-top: -0.6em;" pButton
+                <button *ngIf="userShops?.length == 0" (click)="router.navigate(['/admin/nadmin/addshop']);" style="margin-top: -0.6em;" pButton
                     type="submit" label="Add Shop" class="float-right ui-button-raised"></button>
             </div>
             <div class="ibox-content">
@@ -53,7 +53,7 @@
         <div class="ibox animated fadeInRight">
             <div class="ibox-title">
                 <h5>Existing Branches</h5>
-                <button (click)="router.navigate(['admin/nadmin/addbranch']);" style="margin-top: -0.6em;" pButton
+                <button (click)="router.navigate(['/admin/nadmin/addbranch']);" style="margin-top: -0.6em;" pButton
                     type="submit" label="Add Branch" class="float-right ui-button-raised"></button>
             </div>
             <div class="ibox-content">

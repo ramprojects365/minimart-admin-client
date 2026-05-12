@@ -16,7 +16,7 @@
           type="button"
           icon="pi pi-arrow-left"
           style="margin-right: 1em"
-          (click)="router.navigate(['admin/nadmin/settings'])"
+          (click)="router.navigate(['/admin/nadmin/settings'])"
         ></button>
         <h5>Add Branch</h5>
       </div>
@@ -46,7 +46,7 @@
                     <div class="form-group">
                       <label><b>Shop Category</b></label>
                       <p-dropdown
-                        [options]="shopCategories"
+                        [options]="shopCategoriesList"
                         selected
                         [style]="{ width: '100%' }"
                         name="shopCategory"
