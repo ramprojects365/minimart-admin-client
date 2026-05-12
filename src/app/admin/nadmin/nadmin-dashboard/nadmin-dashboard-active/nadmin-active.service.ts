@@ -29,7 +29,7 @@ export class NadminActiveService {
         return this.http.get<ResponseData>('api/v2/admin/web/sales/' + salesId);
     }
     getActiveOrders(adminId) {
-        return this.http.get<ResponseData>('api/v2/admin/web/sales?admin_id=' + adminId );
+        return this.http.get<ResponseData>('api/v2/admin/web/sales?user_id=' + adminId + '&status=active');
     }
     // getMyBranch(adminId) {
     //     return this.http.get<ResponseData>('api/v2/admin/web/branches/mybranch/' + adminId);
