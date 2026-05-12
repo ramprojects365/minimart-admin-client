@@ -18,10 +18,10 @@ export class SadminBoxRecordsComponent implements OnInit {
   constructor(private sadminBoxService: SadminBoxService) {}
 
   ngOnInit() {
-    this.shopsCount = 14;
-    this.branchesCount = 22;
-    this.totalSales = 240;
-    this.totalOrders = 190;
+    this.shopsCount = 0;
+    this.branchesCount = 0;
+    this.totalSales = 0;
+    this.totalOrders = 0;
     this.pendingSales = 0;
     this.pendingOrders = 0;
     this.getShopCount();
@@ -41,8 +41,8 @@ export class SadminBoxRecordsComponent implements OnInit {
           //   this.totalSales = data.payload.received_amount || 0;
           //   this.pendingSales = data.payload.pending_amount || 0;
           // }
-          this.totalSales = data.payload.received_amount || this.totalSales;
-          this.pendingSales = data.payload.pending_amount || this.pendingSales;
+          this.totalSales = data.payload.received_amount ?? 0;
+          this.pendingSales = data.payload.pending_amount ?? 0;
         } else {
           // console.log('Error - ' + error);
         }
@@ -65,8 +65,8 @@ export class SadminBoxRecordsComponent implements OnInit {
           //   this.totalOrders = data.payload.orders_count;
           //   this.pendingOrders = data.payload.active_count;
           // }
-          this.totalOrders = data.payload.orders_count || this.totalOrders;
-          this.pendingOrders = data.payload.active_count || this.pendingOrders;
+          this.totalOrders = data.payload.orders_count ?? 0;
+          this.pendingOrders = data.payload.active_count ?? 0;
         } else {
           // console.log('Error - ' + error);
         }
@@ -83,7 +83,7 @@ export class SadminBoxRecordsComponent implements OnInit {
         const data = resData;
         // console.log(data);
         if (data.status === 200) {
-          this.shopsCount = data.payload.shops_count || this.shopsCount;
+          this.shopsCount = data.payload.shops_count ?? 0;
         } else {
           // console.log('Error - ' + error);
         }
@@ -99,7 +99,7 @@ export class SadminBoxRecordsComponent implements OnInit {
         const data = resData;
         // console.log(data);
         if (data.status === 200) {
-          this.branchesCount = data.payload.branch_count || this.branchesCount;
+          this.branchesCount = data.payload.branch_count ?? 0;
         } else {
           // console.log('Error - ' + error);
         }

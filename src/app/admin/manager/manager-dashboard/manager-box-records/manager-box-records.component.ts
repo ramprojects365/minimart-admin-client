@@ -45,7 +45,7 @@ export class ManagerBoxRecordsComponent implements OnInit {
     this.managerDashboardService.getShopCount(adminId)
       .subscribe(
         shops => {
-          this.userShopCount = shops.payload.shops_count || 0;
+          this.userShopCount = shops.payload.shops_count ?? 0;
         });
   }
 
@@ -54,7 +54,7 @@ export class ManagerBoxRecordsComponent implements OnInit {
     this.managerDashboardService.getBranchCount(adminId)
       .subscribe(
         shops => {
-          this.userBranchCount = shops.payload.branch_count || 0;
+          this.userBranchCount = shops.payload.branch_count ?? 0;
         });
   }
 
@@ -64,8 +64,8 @@ export class ManagerBoxRecordsComponent implements OnInit {
     this.managerDashboardService.getOrderCount(adminId, branchId)
       .subscribe(
         shops => {
-          this.userOrderCount = shops.payload.orders_count || 0;
-          this.userActiveOrderCount = shops.payload.active_count || 0;
+          this.userOrderCount = shops.payload.orders_count ?? 0;
+          this.userActiveOrderCount = shops.payload.active_count ?? 0;
         });
   }
 
@@ -77,8 +77,8 @@ export class ManagerBoxRecordsComponent implements OnInit {
       .subscribe(
         shops => {
           //console.log(shops.payload);
-          this.userReceivedOrderAmount = shops.payload.received_amount || 0;
-          this.userPendingOrderAmount = shops.payload.pending_amount || 0;
+          this.userReceivedOrderAmount = shops.payload.received_amount ?? 0;
+          this.userPendingOrderAmount = shops.payload.pending_amount ?? 0;
         });
   }
 
