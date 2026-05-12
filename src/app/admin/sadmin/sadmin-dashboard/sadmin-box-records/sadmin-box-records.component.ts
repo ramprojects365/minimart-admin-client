@@ -35,12 +35,6 @@ export class SadminBoxRecordsComponent implements OnInit {
         const data = resData;
         //console.log(data);
         if (data.status === 200) {
-          // if(data.payload.received_amount == null){
-          //   this.totalSales = 0;
-          // }else {
-          //   this.totalSales = data.payload.received_amount || 0;
-          //   this.pendingSales = data.payload.pending_amount || 0;
-          // }
           this.totalSales = data.payload.received_amount ?? 0;
           this.pendingSales = data.payload.pending_amount ?? 0;
         } else {
@@ -48,7 +42,7 @@ export class SadminBoxRecordsComponent implements OnInit {
         }
       },
       (error) => {
-        this.totalSales = 240;
+        this.totalSales = 0;
         this.pendingSales = 0;
       },
     );
@@ -59,12 +53,6 @@ export class SadminBoxRecordsComponent implements OnInit {
         const data = resData;
         //console.log(data);
         if (data.status === 200) {
-          // if(data.payload.orders_count == null){
-          //   this.totalOrders = 0;
-          // }else {
-          //   this.totalOrders = data.payload.orders_count;
-          //   this.pendingOrders = data.payload.active_count;
-          // }
           this.totalOrders = data.payload.orders_count ?? 0;
           this.pendingOrders = data.payload.active_count ?? 0;
         } else {
@@ -72,7 +60,7 @@ export class SadminBoxRecordsComponent implements OnInit {
         }
       },
       (error) => {
-        this.totalOrders = 190;
+        this.totalOrders = 0;
         this.pendingOrders = 0;
       },
     );
@@ -89,7 +77,7 @@ export class SadminBoxRecordsComponent implements OnInit {
         }
       },
       (error) => {
-        this.shopsCount = 14;
+        this.shopsCount = 0;
       },
     );
   }
@@ -105,7 +93,7 @@ export class SadminBoxRecordsComponent implements OnInit {
         }
       },
       (error) => {
-        this.branchesCount = 22;
+        this.branchesCount = 0;
       },
     );
   }

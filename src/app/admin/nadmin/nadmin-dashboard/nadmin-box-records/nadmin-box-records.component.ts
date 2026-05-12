@@ -42,7 +42,7 @@ export class NadminBoxRecordsComponent implements OnInit {
         shops => {
           this.userShopCount = shops.payload.shops_count ?? 0;
         }, () => {
-          this.userShopCount = 6;
+          this.userShopCount = 0;
         });
   }
 
@@ -53,7 +53,7 @@ export class NadminBoxRecordsComponent implements OnInit {
         shops => {
           this.userBranchCount = shops.payload.branch_count ?? 0;
         }, () => {
-          this.userBranchCount = 12;
+          this.userBranchCount = 0;
         });
   }
 
@@ -65,8 +65,8 @@ export class NadminBoxRecordsComponent implements OnInit {
           this.userOrderCount = shops.payload.orders_count ?? 0;
           this.userActiveOrderCount = shops.payload.active_count ?? 0;
         }, () => {
-          this.userOrderCount = 190;
-          this.userActiveOrderCount = 28;
+          this.userOrderCount = 0;
+          this.userActiveOrderCount = 0;
         });
   }
 
@@ -78,8 +78,8 @@ export class NadminBoxRecordsComponent implements OnInit {
           this.userReceivedOrderAmount = shops.payload.received_amount ?? 0;
           this.userPendingOrderAmount = shops.payload.pending_amount ?? 0;
         }, () => {
-          this.userReceivedOrderAmount = 240;
-          this.userPendingOrderAmount = 14;
+          this.userReceivedOrderAmount = 0;
+          this.userPendingOrderAmount = 0;
         });
   }
 
