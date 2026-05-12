@@ -51,11 +51,9 @@ export class NadminPromotionsComponent implements OnInit {
       { field: 'start_date', header: 'Start Date' },
       { field: 'end_date', header: 'End Date' },
     ];
-    this.userShops = this.getMockShops();
-    this.userShop = this.userShops[0]?.value;
-    this.userBranches = this.getMockBranches(this.userShop);
-    this.userBranch = this.userBranches[0]?.value;
-    this.promotions = this.getMockPromotions(this.userBranch);
+    this.userShops = [];
+    this.userBranches = [];
+    this.promotions = [];
     this.getShops();
     this.uploadedImage = '../../../../assets/img/common/sample-promo.jpg'; 
     this.eStartDate = new Date();
@@ -80,7 +78,6 @@ export class NadminPromotionsComponent implements OnInit {
     this.getBranches(event.value);
   }
   changeBranch(event) { 
-    this.promotions = this.getMockPromotions(event.value);
     this.getPromotions(event.value);
   }
   cancelPromo(promo){
@@ -202,19 +199,19 @@ export class NadminPromotionsComponent implements OnInit {
             this.userShop = this.userShops[0]?.value;
             this.getBranches(this.userShop);
           } else {
-            this.userShops = this.getMockShops();
-            this.userShop = this.userShops[0]?.value;
-            this.userBranches = this.getMockBranches(this.userShop);
-            this.userBranch = this.userBranches[0]?.value;
-            this.getPromotions(this.userBranch);
+            this.userShops = [];
+            this.userShop = null;
+            this.userBranches = [];
+            this.userBranch = null;
+            this.promotions = [];
           }
         },
         () => {
-          this.userShops = this.getMockShops();
-          this.userShop = this.userShops[0]?.value;
-          this.userBranches = this.getMockBranches(this.userShop);
-          this.userBranch = this.userBranches[0]?.value;
-          this.getPromotions(this.userBranch);
+          this.userShops = [];
+          this.userShop = null;
+          this.userBranches = [];
+          this.userBranch = null;
+          this.promotions = [];
         },
       );
   }
@@ -228,46 +225,24 @@ export class NadminPromotionsComponent implements OnInit {
               return { label: item.branch_name, value: item.branch_id };
             });
           } else {
-            this.userBranches = this.getMockBranches(shopId);
+            this.userBranches = [];
           }
-          this.userBranch = this.userBranches[0] ? this.userBranches[0].value : '0';
+          this.userBranch = this.userBranches[0]?.value || null;
           // console.log(this.userBranch);   
-          this.getPromotions(this.userBranch);     
+          if (this.userBranch) {
+            this.getPromotions(this.userBranch);
+          } else {
+            this.promotions = [];
+          }
         },
         () => {
-          this.userBranches = this.getMockBranches(shopId);
-          this.userBranch = this.userBranches[0] ? this.userBranches[0].value : '0';
-          this.getPromotions(this.userBranch);
+          this.userBranches = [];
+          this.userBranch = null;
+          this.promotions = [];
         },
       );
   }
 
-  private getMockShops() {
-    return [
-      { label: 'Mini Mart', value: '1' },
-      { label: 'Fresh Basket', value: '2' },
-      { label: 'Daily Needs', value: '3' },
-    ];
-  }
-
-  private getMockBranches(shopId: string) {
-    const map = {
-      '1': [
-        { label: 'Brickfields', value: '102' },
-        { label: 'KL Downtown', value: '101' },
-      ],
-      '2': [
-        { label: 'PJ Section 14', value: '201' },
-        { label: 'Shah Alam', value: '202' },
-      ],
-      '3': [
-        { label: 'Ampang', value: '301' },
-        { label: 'Setapak', value: '302' },
-      ],
-    };
-
-    return map[shopId] || [{ label: 'Default Branch', value: '0' }];
-  }
   getPromotions(branchId) {
     this.nadminPromotionsService.getAllPromotions(branchId)
     .subscribe(
@@ -279,82 +254,15 @@ export class NadminPromotionsComponent implements OnInit {
             item.enddate = this.utilityService.getDateTimeFormattedShort(item.end_date);
             return item;
           });
-        } else if (!Array.isArray(this.promotions) || this.promotions.length === 0) {
-          this.promotions = this.getMockPromotions(branchId);
+        } else {
+          this.promotions = [];
         }
         //console.log('sales with remarks ' + JSON.stringify(this.promotions));
       },
       () => {
-        if (!Array.isArray(this.promotions) || this.promotions.length === 0) {
-          this.promotions = this.getMockPromotions(branchId);
-        }
+        this.promotions = [];
       },
     );
-  }
-
-  private getMockPromotions(branchId: string) {
-    const now = Date.now();
-    const start1 = new Date(now - 2 * 24 * 60 * 60 * 1000).toISOString();
-    const end1 = new Date(now + 5 * 24 * 60 * 60 * 1000).toISOString();
-    const start2 = new Date(now - 10 * 24 * 60 * 60 * 1000).toISOString();
-    const end2 = new Date(now - 3 * 24 * 60 * 60 * 1000).toISOString();
-    const start3 = new Date(now + 1 * 24 * 60 * 60 * 1000).toISOString();
-    const end3 = new Date(now + 8 * 24 * 60 * 60 * 1000).toISOString();
-
-    return [
-      {
-        promo_id: 7001,
-        branch_id: branchId,
-        title: 'Ramadan Deals',
-        description: 'Flat discount across selected items',
-        start_date: start1,
-        end_date: end1,
-        discount: 10,
-        status: 1,
-        picture: '../../../../assets/img/common/sample-promo.jpg',
-        startdate: this.utilityService.getDateTimeFormattedShort(start1),
-        enddate: this.utilityService.getDateTimeFormattedShort(end1),
-      },
-      {
-        promo_id: 7002,
-        branch_id: branchId,
-        title: 'Weekend Special',
-        description: 'Limited time offer',
-        start_date: start2,
-        end_date: end2,
-        discount: 0,
-        status: 0,
-        picture: '../../../../assets/img/common/sample-promo.jpg',
-        startdate: this.utilityService.getDateTimeFormattedShort(start2),
-        enddate: this.utilityService.getDateTimeFormattedShort(end2),
-      },
-      {
-        promo_id: 7003,
-        branch_id: branchId,
-        title: 'New Arrivals Promo',
-        description: 'Discount on new arrivals',
-        start_date: start3,
-        end_date: end3,
-        discount: 5,
-        status: 1,
-        picture: '../../../../assets/img/common/sample-promo.jpg',
-        startdate: this.utilityService.getDateTimeFormattedShort(start3),
-        enddate: this.utilityService.getDateTimeFormattedShort(end3),
-      },
-      {
-        promo_id: 7004,
-        branch_id: branchId,
-        title: 'Clearance Sale',
-        description: 'While stocks last',
-        start_date: start2,
-        end_date: end1,
-        discount: 15,
-        status: 2,
-        picture: '../../../../assets/img/common/sample-promo.jpg',
-        startdate: this.utilityService.getDateTimeFormattedShort(start2),
-        enddate: this.utilityService.getDateTimeFormattedShort(end1),
-      },
-    ];
   }
 
 

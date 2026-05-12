@@ -46,9 +46,8 @@ export class PadminProductsComponent implements OnInit {
       { field: 'name', header: 'Name' },
       { field: 'sku', header: 'SKU' },
     ];
-    this.categories = this.getMockCategories();
-    this.selectedCatInAddProd = this.categories[0]?.category_id;
-    this.products = this.getMockProducts();
+    this.categories = [];
+    this.products = [];
     this.loadCategories();
     this.loadProducts();
     this.title.setTitle("Mini Mart - best online grocery shopping malaysia");
@@ -70,20 +69,18 @@ export class PadminProductsComponent implements OnInit {
           const remoteCategories = categories?.payload?.categories;
           if (Array.isArray(remoteCategories) && remoteCategories.length > 0) {
             this.categories = remoteCategories;
-          } else if (!Array.isArray(this.categories) || this.categories.length === 0) {
-            this.categories = this.getMockCategories();
+          } else {
+            this.categories = [];
           }
           this.categories.map(item => {
             item.label = item.category_name;
             item.value = item.category_id;
           });
-          this.selectedCatInAddProd = this.categories[0]?.category_id;
+          this.selectedCatInAddProd = this.categories[0]?.category_id || '';
         },
         () => {
-          if (!Array.isArray(this.categories) || this.categories.length === 0) {
-            this.categories = this.getMockCategories();
-          }
-          this.selectedCatInAddProd = this.categories[0]?.category_id;
+          this.categories = [];
+          this.selectedCatInAddProd = '';
         },
       );
   }
@@ -96,82 +93,14 @@ export class PadminProductsComponent implements OnInit {
           const remoteProducts = products?.payload?.products;
           if (Array.isArray(remoteProducts) && remoteProducts.length > 0) {
             this.products = remoteProducts;
-          } else if (!Array.isArray(this.products) || this.products.length === 0) {
-            this.products = this.getMockProducts();
+          } else {
+            this.products = [];
           }
         },
         () => {
-          if (!Array.isArray(this.products) || this.products.length === 0) {
-            this.products = this.getMockProducts();
-          }
+          this.products = [];
         },
       );
-  }
-
-  private getMockCategories() {
-    return [
-      { category_id: 11, category_name: 'Rice & Flour', category_icon: 'pi pi-shopping-bag' },
-      { category_id: 12, category_name: 'Spices', category_icon: 'pi pi-star' },
-      { category_id: 13, category_name: 'Snacks', category_icon: 'pi pi-box' },
-      { category_id: 14, category_name: 'Beverages', category_icon: 'pi pi-globe' },
-      { category_id: 15, category_name: 'Frozen', category_icon: 'pi pi-snowflake' },
-      { category_id: 16, category_name: 'Personal Care', category_icon: 'pi pi-heart' },
-    ];
-  }
-
-  private getMockProducts() {
-    return [
-      {
-        product_id: 501,
-        category_id: 11,
-        category_name: 'Rice & Flour',
-        company: 'Mini Mart Select',
-        name: 'Basmati Rice 5kg',
-        sku: 'RICE-BAS-5KG',
-        weight: '5.000',
-        image: 'assets/img/products/basmati-rice.png',
-      },
-      {
-        product_id: 502,
-        category_id: 11,
-        category_name: 'Rice & Flour',
-        company: 'Annapurna',
-        name: 'Wheat Flour 1kg',
-        sku: 'FLOUR-WHT-1KG',
-        weight: '1.000',
-        image: 'assets/img/products/wheat-flour.png',
-      },
-      {
-        product_id: 503,
-        category_id: 12,
-        category_name: 'Spices',
-        company: 'Spice Hub',
-        name: 'Garam Masala 100g',
-        sku: 'SPC-GMAS-100G',
-        weight: '0.100',
-        image: 'assets/img/products/garam-masala.png',
-      },
-      {
-        product_id: 504,
-        category_id: 13,
-        category_name: 'Snacks',
-        company: 'Snacky',
-        name: 'Banana Chips 200g',
-        sku: 'SNK-BCHP-200G',
-        weight: '0.200',
-        image: 'assets/img/products/banana-chips.png',
-      },
-      {
-        product_id: 505,
-        category_id: 14,
-        category_name: 'Beverages',
-        company: 'Tea Time',
-        name: 'Masala Tea 250g',
-        sku: 'BEV-MTEA-250G',
-        weight: '0.250',
-        image: 'assets/img/products/masala-tea.png',
-      },
-    ];
   }
 
   showEditorDialog() {

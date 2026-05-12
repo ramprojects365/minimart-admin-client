@@ -33,9 +33,8 @@ export class NadminSettingsComponent implements OnInit {
       {name: 'description', content: 'Minimart Grocery. We are an online store selling high quality Indian spices, masalas and other groceries at reasonable price delivered direct to the home.'},
       {name: 'robots', content: 'index, follow'}
     ]);
-    this.userShops = this.getMockShops();
-    this.userShop = this.userShops[0]?.value;
-    this.userBranches = this.getMockBranches(this.userShop);
+    this.userShops = [];
+    this.userBranches = [];
     this.getShops();
   }
   logout() {
@@ -53,18 +52,16 @@ export class NadminSettingsComponent implements OnInit {
             });
             this.userShop = this.userShops[0]?.value;
             this.getBranches(this.userShop);
-          } else if (!Array.isArray(this.userShops) || this.userShops.length === 0) {
-            this.userShops = this.getMockShops();
-            this.userShop = this.userShops[0]?.value;
-            this.userBranches = this.getMockBranches(this.userShop);
+          } else {
+            this.userShops = [];
+            this.userShop = null;
+            this.userBranches = [];
           }
         },
         () => {
-          if (!Array.isArray(this.userShops) || this.userShops.length === 0) {
-            this.userShops = this.getMockShops();
-          }
-          this.userShop = this.userShop || this.userShops[0]?.value;
-          this.userBranches = this.getMockBranches(this.userShop);
+          this.userShops = [];
+          this.userShop = null;
+          this.userBranches = [];
         },
       );
   }
@@ -79,12 +76,12 @@ export class NadminSettingsComponent implements OnInit {
               return { label: item.branch_name, value: item.branch_id, image: item.image, active: item.active };
             });
           } else {
-            this.userBranches = this.getMockBranches(shopId);
+            this.userBranches = [];
           }
           // console.log(this.userBranches);
         },
         () => {
-          this.userBranches = this.getMockBranches(shopId);
+          this.userBranches = [];
         },
       );
   }
@@ -109,33 +106,6 @@ export class NadminSettingsComponent implements OnInit {
           this.getShops();
         }
       );
-  }
-
-  private getMockShops() {
-    return [
-      { label: 'Mini Mart', value: '1', address: 'Brickfields, Kuala Lumpur' },
-      { label: 'Fresh Basket', value: '2', address: 'Petaling Jaya' },
-      { label: 'Daily Needs', value: '3', address: 'Ampang, Kuala Lumpur' },
-    ];
-  }
-
-  private getMockBranches(shopId: string) {
-    const map = {
-      '1': [
-        { label: 'Brickfields', value: '102', image: './assets/img/icon-store.svg', active: true },
-        { label: 'KL Downtown', value: '101', image: './assets/img/icon-store.svg', active: true },
-      ],
-      '2': [
-        { label: 'PJ Section 14', value: '201', image: './assets/img/icon-store.svg', active: true },
-        { label: 'Shah Alam', value: '202', image: './assets/img/icon-store.svg', active: false },
-      ],
-      '3': [
-        { label: 'Ampang', value: '301', image: './assets/img/icon-store.svg', active: true },
-        { label: 'Setapak', value: '302', image: './assets/img/icon-store.svg', active: false },
-      ],
-    };
-
-    return map[shopId] || [];
   }
 
 }

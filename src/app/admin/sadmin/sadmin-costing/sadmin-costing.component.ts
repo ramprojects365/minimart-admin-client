@@ -75,10 +75,9 @@ export class SadminCostingComponent implements OnInit {
     this.costingEndDate = new Date();
     this.costingEndDateForPrint = new Date();
     this.todayDate.setDate(this.todayDate.getDate());
-    this.userShops = this.getMockShops();
-    this.userShop = this.userShops[0]?.value;
-    this.userBranches = this.getMockBranches(this.userShop);
-    this.userBranch = this.userBranches[0]?.value || "0";
+    this.userShops = [];
+    this.userBranches = [];
+    this.userBranch = null;
     this.getShops();
     this.title.setTitle(
       "Mini Mart: Grocery delivery from Lulu Hypermarket, Modern Stores, UM Stores | Download today",
@@ -100,15 +99,18 @@ export class SadminCostingComponent implements OnInit {
           });
           this.userShop = this.userShops[0]?.value;
           this.getBranches(this.userShop);
+        } else {
+          this.userShops = [];
+          this.userShop = null;
+          this.userBranches = [];
+          this.userBranch = null;
         }
       },
       () => {
-        if (!Array.isArray(this.userShops) || this.userShops.length === 0) {
-          this.userShops = this.getMockShops();
-        }
-        this.userShop = this.userShop || this.userShops[0]?.value;
-        this.userBranches = this.getMockBranches(this.userShop);
-        this.userBranch = this.userBranches[0]?.value || "0";
+        this.userShops = [];
+        this.userShop = null;
+        this.userBranches = [];
+        this.userBranch = null;
       },
     );
   }
@@ -122,43 +124,17 @@ export class SadminCostingComponent implements OnInit {
             return { label: item.branch_name, value: item.branch_id };
           });
         } else {
-          this.userBranches = this.getMockBranches(shopId);
+          this.userBranches = [];
         }
-        this.userBranch = this.userBranches[0]?.value || "0";
+        this.userBranch = this.userBranches[0]?.value || null;
       },
       () => {
-        this.userBranches = this.getMockBranches(shopId);
-        this.userBranch = this.userBranches[0]?.value || "0";
+        this.userBranches = [];
+        this.userBranch = null;
       },
     );
   }
 
-  private getMockShops() {
-    return [
-      { label: "Mini Mart", value: "1" },
-      { label: "Fresh Basket", value: "2" },
-      { label: "Daily Needs", value: "3" },
-    ];
-  }
-
-  private getMockBranches(shopId: string) {
-    const map = {
-      "1": [
-        { label: "Brickfields", value: "102" },
-        { label: "KL Downtown", value: "101" },
-      ],
-      "2": [
-        { label: "PJ Section 14", value: "201" },
-        { label: "Shah Alam", value: "202" },
-      ],
-      "3": [
-        { label: "Ampang", value: "301" },
-        { label: "Setapak", value: "302" },
-      ],
-    };
-
-    return map[shopId] || [];
-  }
   getSales(form: NgForm) {
     const value = form.value;
 

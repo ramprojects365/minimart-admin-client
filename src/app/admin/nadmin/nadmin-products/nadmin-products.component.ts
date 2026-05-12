@@ -99,19 +99,11 @@ export class NadminProductsComponent implements OnInit {
     ];
     this.selectedCategory = 'All';
     this.selectedBarcode = 'xxxxxxxxxxxx';
-    this.shopItems = this.getMockShopItems();
-    const mockProductsTemp = this.getMockProductsTemp();
-    this.productsTemp = mockProductsTemp;
-    this.products = mockProductsTemp.map(item => {
-      return { label: item.name, value: item.product_id, image: item.image, barcode: item.sku };
-    });
-    this.selectedproduct = this.products[0]?.value;
-    this.selectedImage = this.products[0]?.image;
-    this.selectedBarcode = this.products[0]?.barcode || 'xxxxxxxxxxxx';
-    this.userShops = this.getMockShops();
-    this.userShop = this.userShops[0]?.value;
-    this.userBranches = this.getMockBranches(this.userShop);
-    this.userBranch = this.userBranches[0]?.value;
+    this.shopItems = [];
+    this.productsTemp = [];
+    this.products = [];
+    this.userShops = [];
+    this.userBranches = [];
     this.loadProducts();
 
     this.getShops();
@@ -134,9 +126,7 @@ export class NadminProductsComponent implements OnInit {
         products => {
           //console.log('add products list' + products.payload.products.length);
           const remoteProducts = products?.payload?.products;
-          const finalProducts = (Array.isArray(remoteProducts) && remoteProducts.length > 0)
-            ? remoteProducts
-            : this.getMockProductsTemp();
+          const finalProducts = Array.isArray(remoteProducts) ? remoteProducts : [];
           this.productsTemp = finalProducts;
           this.products = finalProducts.map(item => {
             return { label: item.name, value: item.product_id, image: item.image, barcode: item.sku };
@@ -146,20 +136,20 @@ export class NadminProductsComponent implements OnInit {
           this.selectedBarcode = this.products[0]?.barcode || 'xxxxxxxxxxxx';
         },
         () => {
-          const finalProducts = this.getMockProductsTemp();
-          this.productsTemp = finalProducts;
-          this.products = finalProducts.map(item => {
-            return { label: item.name, value: item.product_id, image: item.image, barcode: item.sku };
-          });
-          this.selectedproduct = this.products[0]?.value;
-          this.selectedImage = this.products[0]?.image;
-          this.selectedBarcode = this.products[0]?.barcode || 'xxxxxxxxxxxx';
+          this.productsTemp = [];
+          this.products = [];
+          this.selectedproduct = null;
+          this.selectedImage = null;
+          this.selectedBarcode = 'xxxxxxxxxxxx';
         },
       );
   }
   changeProduct(event) {
     //console.log(event.value);
     const productIndex = this.products.findIndex(item => item.value === event.value);
+    if (productIndex < 0) {
+      return;
+    }
     this.selectedproduct = this.products[productIndex].value;
     this.selectedImage = this.products[productIndex].image;
     this.selectedBarcode = this.products[productIndex].barcode;
@@ -188,17 +178,14 @@ export class NadminProductsComponent implements OnInit {
       this.products = this.selectedProductsArr.map(item => {
         return { label: item.name, value: item.product_id, image: item.image, barcode: item.sku };
       });
-      this.selectedproduct = this.products[0].value;
-      this.selectedImage = this.products[0].image;
-      this.selectedBarcode = this.products[0].barcode;
     } else {
       this.products = this.productsTemp.map(item => {
         return { label: item.name, value: item.product_id, image: item.image, barcode: item.sku };
       });
-      this.selectedproduct = this.products[0].value;
-      this.selectedImage = this.products[0].image;
-      this.selectedBarcode = this.products[0].barcode;
     }
+    this.selectedproduct = this.products[0]?.value;
+    this.selectedImage = this.products[0]?.image;
+    this.selectedBarcode = this.products[0]?.barcode || 'xxxxxxxxxxxx';
   }
   exportShopProducts() {
     //console.log('shop items'+JSON.stringify(this.shopItems));
@@ -221,19 +208,19 @@ export class NadminProductsComponent implements OnInit {
             this.userShop = this.userShops[0]?.value;
             this.getBranches(this.userShop);
           } else {
-            this.userShops = this.getMockShops();
-            this.userShop = this.userShops[0]?.value;
-            this.userBranches = this.getMockBranches(this.userShop);
-            this.userBranch = this.userBranches[0]?.value;
-            this.getShopItems(this.userBranch);
+            this.userShops = [];
+            this.userShop = null;
+            this.userBranches = [];
+            this.userBranch = null;
+            this.shopItems = [];
           }
         },
         () => {
-          this.userShops = this.getMockShops();
-          this.userShop = this.userShops[0]?.value;
-          this.userBranches = this.getMockBranches(this.userShop);
-          this.userBranch = this.userBranches[0]?.value;
-          this.getShopItems(this.userBranch);
+          this.userShops = [];
+          this.userShop = null;
+          this.userBranches = [];
+          this.userBranch = null;
+          this.shopItems = [];
         },
       );
   }
@@ -248,16 +235,20 @@ export class NadminProductsComponent implements OnInit {
               return { label: item.branch_name, value: item.branch_id };
             });
           } else {
-            this.userBranches = this.getMockBranches(shopId);
+            this.userBranches = [];
           }
-          this.userBranch = this.userBranches[0] ? this.userBranches[0].value : '0';
+          this.userBranch = this.userBranches[0]?.value || null;
           // console.log(this.userBranch);
-          this.getShopItems(this.userBranch);
+          if (this.userBranch) {
+            this.getShopItems(this.userBranch);
+          } else {
+            this.shopItems = [];
+          }
         },
         () => {
-          this.userBranches = this.getMockBranches(shopId);
-          this.userBranch = this.userBranches[0] ? this.userBranches[0].value : '0';
-          this.getShopItems(this.userBranch);
+          this.userBranches = [];
+          this.userBranch = null;
+          this.shopItems = [];
         },
       );
   }
@@ -270,146 +261,14 @@ export class NadminProductsComponent implements OnInit {
           if (Array.isArray(remoteItems) && remoteItems.length > 0) {
             this.shopItems = remoteItems;
             console.log(this.shopItems);
-          } else if (!Array.isArray(this.shopItems) || this.shopItems.length === 0) {
-            this.shopItems = this.getMockShopItems();
+          } else {
+            this.shopItems = [];
           }
         },
         () => {
-          if (!Array.isArray(this.shopItems) || this.shopItems.length === 0) {
-            this.shopItems = this.getMockShopItems();
-          }
+          this.shopItems = [];
         },
       );
-  }
-
-  private getMockShopItems() {
-    return [
-      {
-        item_id: 8001,
-        name: 'Basmati Rice 5kg',
-        category_name: 'Rice',
-        item_price: '24.90',
-        max_items_per_order: 5,
-        item_qr_code: 'RICE-BAS-5KG',
-        articleNumber: 'A-1001',
-        image: 'assets/img/products/basmati-rice.png',
-        availability: true,
-        hidden: false,
-        remarks: '',
-      },
-      {
-        item_id: 8002,
-        name: 'Wheat Flour 1kg',
-        category_name: 'Rice Items',
-        item_price: '6.50',
-        max_items_per_order: 10,
-        item_qr_code: 'FLOUR-WHT-1KG',
-        articleNumber: 'A-1002',
-        image: 'assets/img/products/wheat-flour.png',
-        availability: true,
-        hidden: false,
-        remarks: '',
-      },
-      {
-        item_id: 8003,
-        name: 'Garam Masala 100g',
-        category_name: 'Spices',
-        item_price: '5.20',
-        max_items_per_order: 8,
-        item_qr_code: 'SPC-GMAS-100G',
-        articleNumber: 'A-1003',
-        image: 'assets/img/products/garam-masala.png',
-        availability: true,
-        hidden: false,
-        remarks: 'Promo',
-      },
-      {
-        item_id: 8004,
-        name: 'Banana Chips 200g',
-        category_name: 'Snacks Items',
-        item_price: '7.90',
-        max_items_per_order: 6,
-        item_qr_code: 'SNK-BCHP-200G',
-        articleNumber: 'A-1004',
-        image: 'assets/img/products/banana-chips.png',
-        availability: false,
-        hidden: true,
-        remarks: 'Out of stock',
-      },
-      {
-        item_id: 8005,
-        name: 'Masala Tea 250g',
-        category_name: 'Tea',
-        item_price: '10.00',
-        max_items_per_order: 4,
-        item_qr_code: 'BEV-MTEA-250G',
-        articleNumber: 'A-1005',
-        image: 'assets/img/products/masala-tea.png',
-        availability: true,
-        hidden: false,
-        remarks: '',
-      },
-    ];
-  }
-
-  private getMockShops() {
-    return [
-      { label: 'Mini Mart', value: '1' },
-      { label: 'Fresh Basket', value: '2' },
-    ];
-  }
-
-  private getMockBranches(shopId: string) {
-    const map = {
-      '1': [
-        { label: 'Brickfields', value: '102' },
-        { label: 'KL Downtown', value: '101' },
-      ],
-      '2': [
-        { label: 'PJ Section 14', value: '201' },
-        { label: 'Shah Alam', value: '202' },
-      ],
-    };
-
-    return map[shopId] || [{ label: 'Default Branch', value: '0' }];
-  }
-
-  private getMockProductsTemp() {
-    return [
-      {
-        product_id: 501,
-        category_id: 11,
-        category_name: 'Rice',
-        company: 'Mini Mart Select',
-        name: 'Basmati Rice 5kg',
-        image: 'assets/img/products/basmati-rice.png',
-        description: '',
-        weight: '5.000',
-        sku: 'RICE-BAS-5KG',
-      },
-      {
-        product_id: 503,
-        category_id: 12,
-        category_name: 'Spices',
-        company: 'Spice Hub',
-        name: 'Garam Masala 100g',
-        image: 'assets/img/products/garam-masala.png',
-        description: '',
-        weight: '0.100',
-        sku: 'SPC-GMAS-100G',
-      },
-      {
-        product_id: 505,
-        category_id: 14,
-        category_name: 'Tea',
-        company: 'Tea Time',
-        name: 'Masala Tea 250g',
-        image: 'assets/img/products/masala-tea.png',
-        description: '',
-        weight: '0.250',
-        sku: 'BEV-MTEA-250G',
-      },
-    ];
   }
 
   onRowEditInit(product) {
@@ -522,24 +381,9 @@ export class NadminProductsComponent implements OnInit {
   showdisplayProductAdder() {
     // this.userShop = this.userShops[0].value;
     // this.userBranch = this.userBranches[0].value;
-    if (!Array.isArray(this.products) || this.products.length === 0) {
-      const mockProductsTemp = this.getMockProductsTemp();
-      this.productsTemp = mockProductsTemp;
-      this.products = mockProductsTemp.map(item => {
-        return { label: item.name, value: item.product_id, image: item.image, barcode: item.sku };
-      });
-    }
     this.selectedproduct = this.products[0]?.value;
     this.selectedImage = this.products[0]?.image;
     this.selectedBarcode = this.products[0]?.barcode || 'xxxxxxxxxxxx';
-    if (!Array.isArray(this.userShops) || this.userShops.length === 0) {
-      this.userShops = this.getMockShops();
-      this.userShop = this.userShops[0]?.value;
-    }
-    if (!Array.isArray(this.userBranches) || this.userBranches.length === 0) {
-      this.userBranches = this.getMockBranches(this.userShop);
-      this.userBranch = this.userBranches[0]?.value;
-    }
     this.displayProductAdder = true;
   }
 
@@ -561,8 +405,8 @@ export class NadminProductsComponent implements OnInit {
       return;
     }
     if (!Array.isArray(this.userBranches) || this.userBranches.length === 0) {
-      this.userBranches = this.getMockBranches(this.userShop);
-      this.userBranch = this.userBranches[0]?.value;
+      this.toastr.warning('Please create a branch before adding products.', 'No Branch Found');
+      return;
     }
     if (this.userBranches.length > 1) {
       this.branchSelectReason = 'addProduct';
