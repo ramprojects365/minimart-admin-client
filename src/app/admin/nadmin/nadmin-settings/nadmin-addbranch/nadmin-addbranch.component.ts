@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { FormControl, NgForm } from '@angular/forms';
-import { MapsAPILoader, MouseEvent } from '@agm/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Title, Meta  } from '@angular/platform-browser';
 
@@ -47,7 +46,6 @@ export class NadminAddbranchComponent implements OnInit, AfterViewInit {
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     public router: Router,
-    private mapsAPILoader: MapsAPILoader,
     private ngZone: NgZone,
     private adminLoginService: AdminLoginService,
     private nadminSettingsService: NadminSettingsService,
@@ -143,7 +141,7 @@ export class NadminAddbranchComponent implements OnInit, AfterViewInit {
     this.latitude = 3.129225;
     this.longitude = 101.6861389;
  
-    this.mapsAPILoader.load().then(() => {
+    this.loadGoogleMaps().then(() => {
       if (!this.searchElementRef?.nativeElement) {
         return;
       }
@@ -167,6 +165,32 @@ export class NadminAddbranchComponent implements OnInit, AfterViewInit {
           this.zoom = 15;
         });
       });
+    });
+  }
+
+  private loadGoogleMaps(): Promise<void> {
+    const win = window as any;
+    if (win.google?.maps?.places) {
+      return Promise.resolve();
+    }
+
+    const existingScript = document.querySelector('script[data-google-maps-api]') as HTMLScriptElement;
+    if (existingScript) {
+      return new Promise(resolve => {
+        existingScript.addEventListener('load', () => resolve(), { once: true });
+        existingScript.addEventListener('error', () => resolve(), { once: true });
+      });
+    }
+
+    return new Promise(resolve => {
+      const script = document.createElement('script');
+      script.src = 'https://maps.googleapis.com/maps/api/js?libraries=places';
+      script.async = true;
+      script.defer = true;
+      script.dataset.googleMapsApi = 'true';
+      script.onload = () => resolve();
+      script.onerror = () => resolve();
+      document.head.appendChild(script);
     });
   }
 
@@ -200,7 +224,7 @@ export class NadminAddbranchComponent implements OnInit, AfterViewInit {
     }
   }
 
-  markerDragEnd($event: MouseEvent) {
+  markerDragEnd($event: any) {
     this.latitude = $event.coords.lat;
     this.longitude = $event.coords.lng;
   }
