@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, ElementRef, ViewChild, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, NgZone, ElementRef, ViewChild, PLATFORM_ID, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -15,7 +15,7 @@ import { NadminSettingsService } from '../nadminsettings.service';
   templateUrl: './nadmin-addbranch.component.html',
   styleUrls: ['./nadmin-addbranch.component.scss']
 })
-export class NadminAddbranchComponent implements OnInit {
+export class NadminAddbranchComponent implements OnInit, AfterViewInit {
 
   public searchControl: FormControl;
 
@@ -84,12 +84,16 @@ export class NadminAddbranchComponent implements OnInit {
     this.currency = 'RM';
     this.countryCode = '+60';
     if (isPlatformBrowser(this.platformId)) {
-      // MouseEvent code
-      this.initGoogleServices();
       this.getShops();
       this.shopCategories();
     }
 
+  }
+
+  ngAfterViewInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.initGoogleServices();
+    }
   }
   changeCode(event) {
     console.log(event.value);
@@ -140,6 +144,9 @@ export class NadminAddbranchComponent implements OnInit {
     this.longitude = 101.6861389;
  
     this.mapsAPILoader.load().then(() => {
+      if (!this.searchElementRef?.nativeElement) {
+        return;
+      }
       this.setCurrentLocation();
       this.geoCoder = new google.maps.Geocoder();
       const autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
@@ -200,7 +207,7 @@ export class NadminAddbranchComponent implements OnInit {
 
   uploadImage(event, addFileUpload) {
     //console.log(event.files[0].size);
-    if(event.files[0].size < 60000){
+    if(event.files[0].size <= 1000000){
       this.spinner.show();
       this.nadminSettingsService.uploadImage(event.files[0])
         .subscribe(
@@ -220,7 +227,7 @@ export class NadminAddbranchComponent implements OnInit {
           }
         );
     }else {
-      this.toastr.error('Please upload the small size image.', 'Image Size Bigger!');
+      this.toastr.error('Please upload an image below 1 MB.', 'Image Size Bigger!');
       addFileUpload.clear();
     }
   }
@@ -241,7 +248,7 @@ export class NadminAddbranchComponent implements OnInit {
       this.toastr.warning('Radius should not be more than 30', 'Please check the Radius');
       return;
     }
-    if (value.welcomeMessage.length > 400 ) {
+    if ((value.welcomeMessage || '').length > 400 ) {
       this.toastr.warning('Please check the welcome message', 'Lenght Exceeded');
       return;
     }
@@ -254,6 +261,9 @@ export class NadminAddbranchComponent implements OnInit {
     value.latitude = this.latitude;
     value.longitude = this.longitude;
     value.isAdminDelivery = this.isAdminDelivery;
+    value.isPosEnabled = this.isPosEnabled;
+    value.track_stock = this.track_stock;
+    value.themes = this.theme.themes;
     console.log(value);
     this.spinner.show();
     this.nadminSettingsService.addBranch(value)

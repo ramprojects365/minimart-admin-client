@@ -55,6 +55,16 @@ export class NadminSettingsService {
         return this.http.get<AdminSettingsResponse>('api/v2/admin/web/branches/' + branchId);
     }
 
+    private formatTime(value) {
+        if (!value) {
+            return '';
+        }
+        const date = value instanceof Date ? value : new Date(value);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return hours + ':' + minutes;
+    }
+
     addBranch(branch) {       
         return this.http.post<AdminSettingsResponse>('api/v2/admin/web/branches',
             {
@@ -68,20 +78,20 @@ export class NadminSettingsService {
                 currency: branch.currency,
                 maximum_distance: branch.maxdistance,
                 minimum_sale: branch.minamount,
-                open_time: new Date(branch.openingtime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: false }),
-                close_time: new Date(branch.closingtime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: false }),
-                isAdminDelivery: branch.isAdminDelivery,
-                isPosEnabled: branch.isPosEnabled,
-                track_stock: branch.track_stock,
+                open_time: this.formatTime(branch.openingtime),
+                close_time: this.formatTime(branch.closingtime),
+                isAdminDelivery: branch.isAdminDelivery ? 1 : 0,
+                isPosEnabled: branch.isPosEnabled ? 1 : 0,
+                track_stock: branch.track_stock ? 1 : 0,
                 latitude: branch.latitude,
                 longitude: branch.longitude,
-                home_screen_theme: branch.themes,
-                welcomeMessage: branch.welcomeMessage,
-                rad_three_rate: branch.delchargless3,
-                rad_five_rate: branch.delchargless5,
-                rad_ten_rate: branch.delchargless10,
-                rad_fifteen_rate: branch.delchargless15,
-                rad_twenty_rate: branch.delchargless20 
+                home_screen_theme: branch.themes || 1,
+                welcomeMessage: branch.welcomeMessage || '',
+                rad_three_rate: branch.delchargless3 || 0,
+                rad_five_rate: branch.delchargless5 || 0,
+                rad_ten_rate: branch.delchargless10 || 0,
+                rad_fifteen_rate: branch.delchargless15 || 0,
+                rad_twenty_rate: branch.delchargless20 || 0 
             });
     }
 
@@ -101,11 +111,11 @@ export class NadminSettingsService {
                 currency: branch.selectedCurrency,
                 maximum_distance: branch.maxdistance,
                 minimum_sale: branch.minamount,
-                open_time: new Date(branch.openingtime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: false }),
-                close_time: new Date(branch.closingtime).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: false }),
-                isAdminDelivery: branch.isAdminDelivery,
-                isPosEnabled: branch.isPosEnabled,
-                track_stock: branch.track_stock,
+                open_time: this.formatTime(branch.openingtime),
+                close_time: this.formatTime(branch.closingtime),
+                isAdminDelivery: branch.isAdminDelivery ? 1 : 0,
+                isPosEnabled: branch.isPosEnabled ? 1 : 0,
+                track_stock: branch.track_stock ? 1 : 0,
                 latitude: branch.latitude,
                 longitude: branch.longitude,
                 home_screen_theme: branch.themes,
