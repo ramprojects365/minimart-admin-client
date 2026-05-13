@@ -129,22 +129,62 @@
 </p-dialog>
 
 <!-- Add Product - Select Branch popup -->
-<p-dialog appendTo="body" header="Select Branches" [(visible)]="displaySelectBranchForAddUpdt" [modal]="true" [responsive]="true"
-    [style]="{width: '400px', minWidth: '200px'}" [minY]="70" [closable]="false" [maximizable]="true"
-    [baseZIndex]="10000">
-    Please Select the branches you want to update.
-    <div class="ui-g" style="width:100%;margin-bottom:10px">
-        <div class="ui-g-12" *ngFor="let branch of userBranches; let i = index">
-            <p-checkbox [(ngModel)]="branch.itemSelected" name="{{branch.id}}" label="{{branch.label}}" binary="true" (onChange)="addProdBranchChange(branch, $event)">
-            </p-checkbox>
-        </div>
-        <div class="form-group float-right" style="margin-top: 10px;width: 100%;">
-            <button (click)="addAddProdBranchSelection(faddProd)" pButton type="button" [disabled]="" label="Add"
-                class="float-right ui-button-raised"></button>
-            <button (click)="cancelAaddProdBranchSelection()" pButton type="button" label="Cancel"
-                class="float-right ui-button-raised cancelBtn"></button>
-        </div>
+<p-dialog
+  appendTo="body"
+  header="Select Branches"
+  [(visible)]="displaySelectBranchForAddUpdt"
+  [modal]="true"
+  [style]="{ width: '400px', minWidth: '200px' }"
+  [closable]="false"
+  [maximizable]="true"
+  [baseZIndex]="10000">
+
+  <p>Please select the branches you want to update.</p>
+
+  <div style="width: 100%; margin-bottom: 10px;">
+
+    <div
+      *ngFor="let branch of userBranches; let i = index"
+      style="margin-bottom: 10px;">
+
+      <p-checkbox
+        [(ngModel)]="branch.itemSelected"
+        [name]="'branch_' + branch.id"
+        [inputId]="'branch_' + branch.id"
+        [binary]="true"
+        (onChange)="addProdBranchChange(branch, $event)">
+      </p-checkbox>
+
+      <label
+        [for]="'branch_' + branch.id"
+        style="margin-left: 8px;">
+        {{ branch.label }}
+      </label>
+
     </div>
+
+    <div
+      class="form-group float-right"
+      style="margin-top: 10px; width: 100%;">
+
+      <button
+        pButton
+        type="button"
+        label="Add"
+        class="float-right ui-button-raised"
+        (click)="addAddProdBranchSelection(faddProd)">
+      </button>
+
+      <button
+        pButton
+        type="button"
+        label="Cancel"
+        class="float-right ui-button-raised cancelBtn"
+        (click)="cancelAaddProdBranchSelection()">
+      </button>
+
+    </div>
+  </div>
 </p-dialog>
 <!-- END Add Product - Select Branch popup -->
 
