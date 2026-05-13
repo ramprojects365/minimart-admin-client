@@ -22,12 +22,13 @@ export class NadminEditbranchComponent implements OnInit {
   public zoom: number;
   private geoCoder;
 
-  userShops = [];
-  shopCategoriesList = [];
-  userShop: string;
-  shopCategory: string;
-  currencies = [];
-  selectedCurrency = "";
+  userShops: any[] = [];
+  shopCategoriesList: any[] = [];
+  currencies: any[] = [];
+
+  selectedCurrency: string = '';
+  userShop: any = '';
+shopCategory: any = '';
   opening_time: any;
   closing_time: any;
   uploadedImage: string;
@@ -143,96 +144,96 @@ export class NadminEditbranchComponent implements OnInit {
         });
   }
 
-initGoogleServices() {
-  this.zoom = 15;
+  initGoogleServices() {
+    this.zoom = 15;
 
-  this.loadGoogleMaps()
-    .then(() => {
-      if (!this.searchElementRef?.nativeElement) {
-        console.error('Search input not found');
-        return;
-      }
-
-      const googleObj = (window as any).google;
-
-      if (!googleObj?.maps?.places) {
-        console.error('Google Places library not loaded');
-        return;
-      }
-
-      this.geoCoder = new googleObj.maps.Geocoder();
-
-      const autocomplete = new googleObj.maps.places.Autocomplete(
-        this.searchElementRef.nativeElement,
-        {
-          types: ['geocode'],
-          componentRestrictions: { country: 'my' }
+    this.loadGoogleMaps()
+      .then(() => {
+        if (!this.searchElementRef?.nativeElement) {
+          console.error('Search input not found');
+          return;
         }
-      );
 
-      autocomplete.addListener('place_changed', () => {
-        this.ngZone.run(() => {
-          const place = autocomplete.getPlace();
+        const googleObj = (window as any).google;
 
-          if (!place.geometry || !place.geometry.location) {
-            this.toastr.warning('Please select a valid location from the dropdown');
-            return;
+        if (!googleObj?.maps?.places) {
+          console.error('Google Places library not loaded');
+          return;
+        }
+
+        this.geoCoder = new googleObj.maps.Geocoder();
+
+        const autocomplete = new googleObj.maps.places.Autocomplete(
+          this.searchElementRef.nativeElement,
+          {
+            types: ['geocode'],
+            componentRestrictions: { country: 'my' }
           }
+        );
 
-          this.latitude = place.geometry.location.lat();
-          this.longitude = place.geometry.location.lng();
-          this.zoom = 15;
+        autocomplete.addListener('place_changed', () => {
+          this.ngZone.run(() => {
+            const place = autocomplete.getPlace();
 
-          this.branchDetails.branch_addr =
-            place.formatted_address || place.name || '';
+            if (!place.geometry || !place.geometry.location) {
+              this.toastr.warning('Please select a valid location from the dropdown');
+              return;
+            }
 
-          console.log('Selected place:', place);
-          console.log('Latitude:', this.latitude);
-          console.log('Longitude:', this.longitude);
+            this.latitude = place.geometry.location.lat();
+            this.longitude = place.geometry.location.lng();
+            this.zoom = 15;
+
+            this.branchDetails.branch_addr =
+              place.formatted_address || place.name || '';
+
+            console.log('Selected place:', place);
+            console.log('Latitude:', this.latitude);
+            console.log('Longitude:', this.longitude);
+          });
         });
+      })
+      .catch(error => {
+        console.error('Google Maps failed to load:', error);
+        this.toastr.error('Google Maps failed to load', 'Error!');
       });
-    })
-    .catch(error => {
-      console.error('Google Maps failed to load:', error);
-      this.toastr.error('Google Maps failed to load', 'Error!');
-    });
-}
-private loadGoogleMaps(): Promise<void> {
-  const win = window as any;
-
-  if (win.google?.maps?.places) {
-    return Promise.resolve();
   }
+  private loadGoogleMaps(): Promise<void> {
+    const win = window as any;
 
-  const existingScript = document.querySelector(
-    'script[data-google-maps-api]'
-  ) as HTMLScriptElement;
+    if (win.google?.maps?.places) {
+      return Promise.resolve();
+    }
 
-  if (existingScript) {
+    const existingScript = document.querySelector(
+      'script[data-google-maps-api]'
+    ) as HTMLScriptElement;
+
+    if (existingScript) {
+      return new Promise((resolve, reject) => {
+        existingScript.addEventListener('load', () => resolve(), { once: true });
+        existingScript.addEventListener('error', () => reject(), { once: true });
+      });
+    }
+
     return new Promise((resolve, reject) => {
-      existingScript.addEventListener('load', () => resolve(), { once: true });
-      existingScript.addEventListener('error', () => reject(), { once: true });
+      const script = document.createElement('script');
+
+      script.src =
+        'https://maps.googleapis.com/maps/api/js' +
+        '?key=' + environment.googleMapsApiKey +
+        '&libraries=places';
+
+      script.async = true;
+      script.defer = true;
+      script.dataset.googleMapsApi = 'true';
+
+      script.onload = () => resolve();
+      script.onerror = error => reject(error);
+
+      document.head.appendChild(script);
     });
   }
-
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-
-    script.src =
-      'https://maps.googleapis.com/maps/api/js' +
-      '?key=' + environment.googleMapsApiKey +
-      '&libraries=places';
-
-    script.async = true;
-    script.defer = true;
-    script.dataset.googleMapsApi = 'true';
-
-    script.onload = () => resolve();
-    script.onerror = error => reject(error);
-
-    document.head.appendChild(script);
-  });
-}
 
   markerDragEnd($event: any) {
     this.latitude = $event.coords.lat;

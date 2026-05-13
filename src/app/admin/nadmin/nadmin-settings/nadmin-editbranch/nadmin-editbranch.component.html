@@ -22,15 +22,15 @@
                                         <div class="col-sm-6 b-r">
                                             <div class="form-group">
                                                 <label><b>Shop Name</b></label>
-                                                <p-dropdown disabled [options]="userShops" selected
+                                                <p-dropdown [disabled]="true" [options]="userShops"
                                                     [style]="{'width':'100%'}" name="userShop" [(ngModel)]="userShop"
                                                     required>
                                                 </p-dropdown>
                                             </div>
                                             <div class="form-group">
                                                 <label><b>Shop Category</b></label>
-                                                <p-dropdown [options]="shopCategoriesList" selected
-                                                    [style]="{'width':'100%'}" name="shopCategory"
+                                                <p-dropdown [options]="shopCategoriesList" optionLabel="label"
+                                                    optionValue="value" [style]="{'width':'100%'}" name="shopCategory"
                                                     [(ngModel)]="shopCategory" required>
                                                 </p-dropdown>
                                             </div>
@@ -91,7 +91,8 @@
                                             </div>
                                             <div class="form-group">
                                                 <label><b>Currency</b></label>
-                                                <p-dropdown [options]="currencies" selected [style]="{'width':'100%'}"
+                                                <p-dropdown [options]="currencies" optionLabel="label"
+                                                    optionValue="value" [style]="{'width':'100%'}"
                                                     name="selectedCurrency" [(ngModel)]="selectedCurrency" required>
                                                 </p-dropdown>
                                             </div>
