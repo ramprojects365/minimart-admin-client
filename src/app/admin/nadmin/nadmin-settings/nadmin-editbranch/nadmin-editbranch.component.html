@@ -44,6 +44,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label><b>Branch Location</b></label>
+
                                                 <input placeholder="search for location" autocorrect="off"
                                                     autocapitalize="off" spellcheck="off" type="text"
                                                     class="form-control" required #search>
@@ -62,7 +63,8 @@
                                             </div>
                                             <div class="form-group">
                                                 <label><b>Branch Address</b></label>
-                                                <input pInputText type="text" placeholder="Copy the same address here from above google search bar"
+                                                <input pInputText type="text"
+                                                    placeholder="Copy the same address here from above google search bar"
                                                     class="form-control" [(ngModel)]="branchDetails.branch_addr"
                                                     name="address" #address="ngModel" required>
                                                 <span *ngIf="!address.valid && address.touched"
@@ -130,7 +132,7 @@
                                                 <span *ngIf="!closingtime.valid && closingtime.touched"
                                                     style="color:#ffa500">Please
                                                     choose closing time.</span>
-                                            </div>                                       
+                                            </div>
                                         </div>
                                         <div class="col-sm-6">
                                             <div>
@@ -138,9 +140,9 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Distance < 3km</label> <input pInputText type="number"
-                                                        placeholder="Enter delivery charge" class="form-control"
-                                                        [(ngModel)]="branchDetails.rad_three_rate" name="delchargless3"
-                                                        #delchargless3="ngModel" required>
+                                                            placeholder="Enter delivery charge" class="form-control"
+                                                            [(ngModel)]="branchDetails.rad_three_rate"
+                                                            name="delchargless3" #delchargless3="ngModel" required>
                                                         <span *ngIf="!delchargless3.valid && delchargless3.touched"
                                                             style="color:#ffa500">Please
                                                             enter minimum delivery amount.</span>
@@ -173,7 +175,7 @@
                                                     enter minimum delivery amount.</span>
                                             </div>
                                             <div class="form-group">
-                                              <label>Distance above 15km</label>
+                                                <label>Distance above 15km</label>
                                                 <input pInputText type="number" placeholder="Enter delivery charge"
                                                     class="form-control" [(ngModel)]="branchDetails.rad_twenty_rate"
                                                     name="delchargless20" #delchargless20="ngModel" required>
@@ -263,11 +265,11 @@
                                                     autoResize="autoResize" style="width: 100%;
                                                 border-radius: 3px;">
                                             </textarea>
-                                            </div>                                  
+                                            </div>
                                             <div class="form-group">
                                                 <button pButton type="submit" [disabled]="!fupdatebranch.valid"
                                                     label="Update Branch" class="float-right ui-button-raised"></button>
-                                              </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

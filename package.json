@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "node static-server.js",
-    "build": "ng build --configuration=production",
+    "build": "node replace-env.js && ng build --configuration production",
     "start:dev": "ng serve --proxy-config proxy.conf.json",
     "test": "ng test",
     "lint": "ng lint",

@@ -4,10 +4,11 @@ import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { FormControl, NgForm } from '@angular/forms';
 import { isPlatformBrowser } from '@angular/common';
-import { Title, Meta  } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 
 import { AdminLoginService } from '../../../../services/admin/admin-login/adminlogin.service';
 import { NadminSettingsService } from '../nadminsettings.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-nadmin-addbranch',
@@ -51,7 +52,7 @@ export class NadminAddbranchComponent implements OnInit, AfterViewInit {
     private nadminSettingsService: NadminSettingsService,
     private toastr: ToastrService,
     private spinner: NgxSpinnerService,
-    private title:Title,
+    private title: Title,
     private metaService: Meta
   ) { }
 
@@ -70,7 +71,7 @@ export class NadminAddbranchComponent implements OnInit, AfterViewInit {
     this.currencies = [
       { label: 'BND', value: 'BND' },
       { label: 'INR', value: 'INR' },
-      { label: 'RM', value: 'RM' },     
+      { label: 'RM', value: 'RM' },
       { label: 'USD', value: 'USD' },
     ];
     this.countryCodes = [
@@ -119,28 +120,28 @@ export class NadminAddbranchComponent implements OnInit, AfterViewInit {
           // console.log(this.userShops);
         });
   }
-  shopCategories(){
+  shopCategories() {
     this.nadminSettingsService.getShopCategories()
-    .subscribe(
-      categories => {
-        const remoteCategories = categories?.payload?.categories;
-        if (!Array.isArray(remoteCategories) || remoteCategories.length === 0) {
-          this.shopCategoriesList = [];
-          this.shopCategory = null;
-          return;
-        }
-        this.shopCategoriesList = remoteCategories.map(item => {
-          return { label: item.category_name, value: item.category_id };
+      .subscribe(
+        categories => {
+          const remoteCategories = categories?.payload?.categories;
+          if (!Array.isArray(remoteCategories) || remoteCategories.length === 0) {
+            this.shopCategoriesList = [];
+            this.shopCategory = null;
+            return;
+          }
+          this.shopCategoriesList = remoteCategories.map(item => {
+            return { label: item.category_name, value: item.category_id };
+          });
+          this.shopCategory = this.shopCategoriesList[0]?.value;
+          //console.log(JSON.stringify(categories.payload));
         });
-        this.shopCategory = this.shopCategoriesList[0]?.value;
-        //console.log(JSON.stringify(categories.payload));
-      });
   }
   initGoogleServices() {
     this.zoom = 15;
     this.latitude = 3.129225;
     this.longitude = 101.6861389;
- 
+
     this.loadGoogleMaps().then(() => {
       if (!this.searchElementRef?.nativeElement) {
         return;
@@ -184,8 +185,10 @@ export class NadminAddbranchComponent implements OnInit, AfterViewInit {
 
     return new Promise(resolve => {
       const script = document.createElement('script');
-      script.src = 'https://maps.googleapis.com/maps/api/js?libraries=places';
-      script.async = true;
+      script.src =
+        'https://maps.googleapis.com/maps/api/js' +
+        '?key=' + environment.googleMapsApiKey +
+        '&libraries=places'; script.async = true;
       script.defer = true;
       script.dataset.googleMapsApi = 'true';
       script.onload = () => resolve();
@@ -231,7 +234,7 @@ export class NadminAddbranchComponent implements OnInit, AfterViewInit {
 
   uploadImage(event, addFileUpload) {
     //console.log(event.files[0].size);
-    if(event.files[0].size <= 1000000){
+    if (event.files[0].size <= 1000000) {
       this.spinner.show();
       this.nadminSettingsService.uploadImage(event.files[0])
         .subscribe(
@@ -250,7 +253,7 @@ export class NadminAddbranchComponent implements OnInit, AfterViewInit {
             this.toastr.error(error.error.message, 'Error!');
           }
         );
-    }else {
+    } else {
       this.toastr.error('Please upload an image below 1 MB.', 'Image Size Bigger!');
       addFileUpload.clear();
     }
@@ -262,17 +265,17 @@ export class NadminAddbranchComponent implements OnInit, AfterViewInit {
       this.toastr.warning('Please fill all the details!', 'Add All Details.');
       return;
     }
-    
+
     const value = form.value;
     if (value.phone.length < 9 || value.phone.length > 10) {
       this.toastr.warning('Please check the phone number', 'Invalid Phone Number');
       return;
     }
-    if (value.maxdistance > 30 ) {
+    if (value.maxdistance > 30) {
       this.toastr.warning('Radius should not be more than 30', 'Please check the Radius');
       return;
     }
-    if ((value.welcomeMessage || '').length > 400 ) {
+    if ((value.welcomeMessage || '').length > 400) {
       this.toastr.warning('Please check the welcome message', 'Lenght Exceeded');
       return;
     }
@@ -280,7 +283,7 @@ export class NadminAddbranchComponent implements OnInit, AfterViewInit {
       this.toastr.warning('Please select an image!', 'Select Image');
       return;
     }
-    
+
     value.image = this.uploadedImage;
     value.latitude = this.latitude;
     value.longitude = this.longitude;
@@ -300,7 +303,7 @@ export class NadminAddbranchComponent implements OnInit, AfterViewInit {
             this.router.navigate(['/admin/nadmin/settings']);
             this.uploadedImage = '';
             addFileUpload.clear();
-            form.reset();           
+            form.reset();
           } else {
             this.toastr.error('There was a problem adding the branch!', 'Branch Add Error!');
           }

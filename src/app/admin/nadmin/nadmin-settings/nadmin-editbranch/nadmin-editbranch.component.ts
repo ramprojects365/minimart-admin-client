@@ -4,10 +4,11 @@ import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { FormControl, NgForm } from '@angular/forms';
 import { isPlatformBrowser } from '@angular/common';
-import { Title, Meta  } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 
 import { AdminLoginService } from '../../../../services/admin/admin-login/adminlogin.service';
 import { NadminSettingsService } from '../nadminsettings.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-nadmin-editbranch',
@@ -50,7 +51,7 @@ export class NadminEditbranchComponent implements OnInit {
     private nadminSettingsService: NadminSettingsService,
     private toastr: ToastrService,
     private spinner: NgxSpinnerService,
-    private title:Title,
+    private title: Title,
     private metaService: Meta
   ) { }
 
@@ -70,7 +71,7 @@ export class NadminEditbranchComponent implements OnInit {
     this.currencies = [
       { label: 'BND', value: 'BND' },
       { label: 'INR', value: 'INR' },
-      { label: 'RM', value: 'RM' },     
+      { label: 'RM', value: 'RM' },
       { label: 'USD', value: 'USD' },
     ];
     this.branchId = this.route.snapshot.paramMap.get('branch');
@@ -104,22 +105,22 @@ export class NadminEditbranchComponent implements OnInit {
           // console.log(this.userShops);
         });
   }
-  shopCategories(){
+  shopCategories() {
     this.nadminSettingsService.getShopCategories()
-    .subscribe(
-      categories => {
-        const remoteCategories = categories?.payload?.categories;
-        if (!Array.isArray(remoteCategories) || remoteCategories.length === 0) {
-          this.shopCategoriesList = [];
-          this.shopCategory = null;
-          return;
-        }
-        this.shopCategoriesList = remoteCategories.map(item => {
-          return { label: item.category_name, value: item.category_id };
+      .subscribe(
+        categories => {
+          const remoteCategories = categories?.payload?.categories;
+          if (!Array.isArray(remoteCategories) || remoteCategories.length === 0) {
+            this.shopCategoriesList = [];
+            this.shopCategory = null;
+            return;
+          }
+          this.shopCategoriesList = remoteCategories.map(item => {
+            return { label: item.category_name, value: item.category_id };
+          });
+          //this.shopCategory = this.shopCategories[0].value;
+          //console.log(JSON.stringify(categories.payload));
         });
-        //this.shopCategory = this.shopCategories[0].value;
-        //console.log(JSON.stringify(categories.payload));
-      });
   }
   getBranchDetails() {
     this.nadminSettingsService.getBranchDetails(this.branchId)
@@ -142,62 +143,96 @@ export class NadminEditbranchComponent implements OnInit {
         });
   }
 
-  initGoogleServices() {
-    // console.log(this.branchDetails.latitude);
-    // console.log(this.branchDetails.longitude);
-    this.zoom = 15;
-    this.loadGoogleMaps().then(() => {
+initGoogleServices() {
+  this.zoom = 15;
+
+  this.loadGoogleMaps()
+    .then(() => {
       if (!this.searchElementRef?.nativeElement) {
+        console.error('Search input not found');
         return;
       }
-      // this.setCurrentLocation();
-      this.geoCoder = new google.maps.Geocoder();
-      const autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
-        types: []
-      });
+
+      const googleObj = (window as any).google;
+
+      if (!googleObj?.maps?.places) {
+        console.error('Google Places library not loaded');
+        return;
+      }
+
+      this.geoCoder = new googleObj.maps.Geocoder();
+
+      const autocomplete = new googleObj.maps.places.Autocomplete(
+        this.searchElementRef.nativeElement,
+        {
+          types: ['geocode'],
+          componentRestrictions: { country: 'my' }
+        }
+      );
+
       autocomplete.addListener('place_changed', () => {
         this.ngZone.run(() => {
-          // get the place result
-          const place: google.maps.places.PlaceResult = autocomplete.getPlace();
+          const place = autocomplete.getPlace();
 
-          // verify result
-          if (place.geometry === undefined || place.geometry === null) {
+          if (!place.geometry || !place.geometry.location) {
+            this.toastr.warning('Please select a valid location from the dropdown');
             return;
           }
-          // set latitude, longitude and zoom
+
           this.latitude = place.geometry.location.lat();
           this.longitude = place.geometry.location.lng();
           this.zoom = 15;
+
+          this.branchDetails.branch_addr =
+            place.formatted_address || place.name || '';
+
+          console.log('Selected place:', place);
+          console.log('Latitude:', this.latitude);
+          console.log('Longitude:', this.longitude);
         });
       });
+    })
+    .catch(error => {
+      console.error('Google Maps failed to load:', error);
+      this.toastr.error('Google Maps failed to load', 'Error!');
+    });
+}
+private loadGoogleMaps(): Promise<void> {
+  const win = window as any;
+
+  if (win.google?.maps?.places) {
+    return Promise.resolve();
+  }
+
+  const existingScript = document.querySelector(
+    'script[data-google-maps-api]'
+  ) as HTMLScriptElement;
+
+  if (existingScript) {
+    return new Promise((resolve, reject) => {
+      existingScript.addEventListener('load', () => resolve(), { once: true });
+      existingScript.addEventListener('error', () => reject(), { once: true });
     });
   }
 
-  private loadGoogleMaps(): Promise<void> {
-    const win = window as any;
-    if (win.google?.maps?.places) {
-      return Promise.resolve();
-    }
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
 
-    const existingScript = document.querySelector('script[data-google-maps-api]') as HTMLScriptElement;
-    if (existingScript) {
-      return new Promise(resolve => {
-        existingScript.addEventListener('load', () => resolve(), { once: true });
-        existingScript.addEventListener('error', () => resolve(), { once: true });
-      });
-    }
+    script.src =
+      'https://maps.googleapis.com/maps/api/js' +
+      '?key=' + environment.googleMapsApiKey +
+      '&libraries=places';
 
-    return new Promise(resolve => {
-      const script = document.createElement('script');
-      script.src = 'https://maps.googleapis.com/maps/api/js?libraries=places';
-      script.async = true;
-      script.defer = true;
-      script.dataset.googleMapsApi = 'true';
-      script.onload = () => resolve();
-      script.onerror = () => resolve();
-      document.head.appendChild(script);
-    });
-  }
+    script.async = true;
+    script.defer = true;
+    script.dataset.googleMapsApi = 'true';
+
+    script.onload = () => resolve();
+    script.onerror = error => reject(error);
+
+    document.head.appendChild(script);
+  });
+}
 
   markerDragEnd($event: any) {
     this.latitude = $event.coords.lat;
@@ -205,29 +240,29 @@ export class NadminEditbranchComponent implements OnInit {
   }
   uploadImage(event, addFileUpload) {
     // console.log(event.files[0]);
-    if(event.files[0].size < 60000){
+    if (event.files[0].size < 60000) {
       this.spinner.show();
-    this.nadminSettingsService.uploadImage(event.files[0])
-      .subscribe(
-        response => {
-          this.spinner.hide();
-          // console.log(response);
-          if (response.status === 200) {
-            addFileUpload.clear();
-            this.uploadedImage = response.payload.image;
-          } else {
+      this.nadminSettingsService.uploadImage(event.files[0])
+        .subscribe(
+          response => {
+            this.spinner.hide();
             // console.log(response);
-            this.toastr.error('There was a problem uploading your image!', 'Image Upload Error!');
+            if (response.status === 200) {
+              addFileUpload.clear();
+              this.uploadedImage = response.payload.image;
+            } else {
+              // console.log(response);
+              this.toastr.error('There was a problem uploading your image!', 'Image Upload Error!');
+            }
+          }, error => {
+            this.spinner.hide();
+            this.toastr.error(error.error.message, 'Error!');
           }
-        }, error => {
-          this.spinner.hide();
-          this.toastr.error(error.error.message, 'Error!');
-        }
-      );
-    }else {
+        );
+    } else {
       this.toastr.error('Please upload the small size image.', 'Image Size Bigger!');
       addFileUpload.clear();
-    } 
+    }
   }
   updateBranch(form: NgForm, addFileUpload) {
     if (!form.valid) {
@@ -240,12 +275,12 @@ export class NadminEditbranchComponent implements OnInit {
       this.toastr.warning('Please check the + and country code', 'Invalid Phone Number');
       return;
     }
-    if (value.maxdistance > 30 ) {
+    if (value.maxdistance > 30) {
       this.toastr.warning('Radius should not be more than 30', 'Please check the Radius');
       return;
     }
-    if(value.welcomeMessage !== null){
-      if (value.welcomeMessage.length > 400 ) {
+    if (value.welcomeMessage !== null) {
+      if (value.welcomeMessage.length > 400) {
         this.toastr.warning('Please check the welcome message', 'Lenght exceeded');
         return;
       }
@@ -258,7 +293,7 @@ export class NadminEditbranchComponent implements OnInit {
       value.image = this.branchDetails.image;
     }
 
-    if(value.minamount <5){
+    if (value.minamount < 5) {
       this.toastr.warning('Minimum amount should not be less than 5', 'Please check the Minimum Amount');
       return;
     }
