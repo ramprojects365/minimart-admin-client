@@ -8,7 +8,7 @@ import { Title, Meta } from '@angular/platform-browser';
 
 import { AdminLoginService } from '../../../../services/admin/admin-login/adminlogin.service';
 import { NadminSettingsService } from '../nadminsettings.service';
-import { environment } from 'src/environments/environment';
+import { environment } from 'src/environments/environment.prod';
 
 @Component({
   selector: 'app-nadmin-addbranch',
